@@ -76,8 +76,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Only add images if we have them
   if (previewImage) {
-    metadata.openGraph.images = [previewImage];
-    metadata.twitter.images = [previewImage];
+    metadata.openGraph!.images = [previewImage];
+    metadata.twitter!.images = [previewImage];
   }
   
   return metadata;
