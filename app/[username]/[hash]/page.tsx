@@ -26,51 +26,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Extract image from cast embeds if available
   let previewImage: string | undefined;
   if (cast?.embeds && cast.embeds.length > 0) {
-    console.log('Cast embeds:', JSON.stringify(cast.embeds, null, 2));
-    // Look for image embeds
+    // Just take the first URL embed we find
     for (const embed of cast.embeds) {
-      // Check if it's a URL embed
       if ('url' in embed && embed.url) {
-        console.log('Found URL embed:', embed.url);
-        
-        // Check if it has image metadata
-        if ('metadata' in embed && embed.metadata) {
-          const metadata = embed.metadata as any;
-          if (metadata.content_type && metadata.content_type.startsWith('image/')) {
-            previewImage = embed.url;
-            console.log('Using embed image (via metadata):', previewImage);
-            break;
-          }
-        }
-        
-        // Fallback to URL pattern matching
-        if (!previewImage && (
-            embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
-            embed.url.includes('imgur.com') ||
-            embed.url.includes('i.imgur.com') ||
-            embed.url.includes('imagedelivery.net') ||
-            embed.url.includes('mypinata.cloud'))) {
-          previewImage = embed.url;
-          console.log('Using embed image (via URL pattern):', previewImage);
-          break;
-        }
-      }
-      
-      // Check for cast embeds with images
-      if ('cast' in embed && embed.cast && 'embeds' in embed.cast && embed.cast.embeds) {
-        // Check embeds within quoted cast
-        for (const innerEmbed of embed.cast.embeds as any[]) {
-          if (innerEmbed.url && innerEmbed.metadata?.content_type?.startsWith('image/')) {
-            previewImage = innerEmbed.url;
-            console.log('Using image from quoted cast:', previewImage);
-            break;
-          }
-        }
+        previewImage = embed.url;
+        break;
       }
     }
   }
   
-  // Only use author's profile picture as fallback if no embed image found
+  // Only use author's profile picture as fallback if no embed URL found
   if (!previewImage && cast?.author.pfp_url) {
     previewImage = cast.author.pfp_url;
   }
