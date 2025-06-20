@@ -18,6 +18,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
   const cast = await fetchCastByIdentifier(formattedHash);
   
+  console.log('Metadata generation - Cast found:', !!cast);
+  console.log('Metadata generation - Cast text:', cast?.text?.substring(0, 100));
+  
   // Use the actual deployment URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
   
@@ -102,14 +105,19 @@ export default async function CastPage({ params }: PageProps) {
     redirect(originalUrl);
   }
   
+  // Fetch cast data for display
+  const castData = await fetchCastByIdentifier(hash.startsWith('0x') ? hash : `0x${hash}`);
+  
   // For bots, render a simple preview page with debug info
-  const debugInfo = process.env.NODE_ENV === 'development' ? (
+  const debugInfo = (
     <div className="mt-4 p-4 bg-gray-100 rounded text-xs text-gray-600">
       <p>Debug: User Agent: {userAgent.substring(0, 50)}...</p>
       <p>Is Bot: {isBot ? 'Yes' : 'No'}</p>
       <p>Base URL: {process.env.NEXT_PUBLIC_BASE_URL}</p>
+      <p>Cast found: {castData ? 'Yes' : 'No'}</p>
+      {castData && <p>Cast text: {castData.text.substring(0, 100)}...</p>}
     </div>
-  ) : null;
+  );
   
   return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
@@ -117,12 +125,26 @@ export default async function CastPage({ params }: PageProps) {
         <h1 className="text-2xl font-bold text-purple-900 mb-4">
           Farcaster Cast Preview
         </h1>
-        <p className="text-gray-600 mb-6">
-          Loading cast from @{username}...
-        </p>
-        <p className="text-sm text-gray-500 mb-6">
-          Hash: {hash}
-        </p>
+        {castData ? (
+          <>
+            <div className="mb-6">
+              <p className="text-sm text-gray-500 mb-2">@{castData.author.username}</p>
+              <p className="text-gray-700">{castData.text}</p>
+            </div>
+            <p className="text-sm text-gray-500 mb-6">
+              {castData.reactions.likes_count} likes · {castData.reactions.recasts_count} recasts
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-gray-600 mb-6">
+              Loading cast from @{username}...
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Hash: {hash}
+            </p>
+          </>
+        )}
         <a 
           href={`https://farcaster.xyz/${username}/${hash}`}
           className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
