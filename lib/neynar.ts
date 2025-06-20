@@ -84,6 +84,8 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
     console.error('NEYNAR_API_KEY is not set');
     return null;
   }
+  
+  console.log('Fetching cast with identifier:', identifier);
 
   try {
     const params = new URLSearchParams({
@@ -103,7 +105,8 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
     );
 
     if (!response.ok) {
-      console.error('Neynar API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Neynar API error:', response.status, response.statusText, errorText);
       return null;
     }
 
