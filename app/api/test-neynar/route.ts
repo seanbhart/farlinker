@@ -28,11 +28,11 @@ export async function GET() {
       } : null,
       testedUrl: 'swabbie.eth/0xf71a74c3'
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Test Neynar API - Error:', error);
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       apiKeyExists: !!process.env.NEYNAR_API_KEY,
     });
   }
