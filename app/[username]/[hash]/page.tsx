@@ -26,10 +26,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Extract image from cast embeds if available
   let previewImage: string | undefined;
   if (cast?.embeds && cast.embeds.length > 0) {
-    // Just take the first URL embed we find
-    for (const embed of cast.embeds) {
+    console.log('Checking embeds for images, total embeds:', cast.embeds.length);
+    // Look through all embeds to find one with a URL
+    for (let i = 0; i < cast.embeds.length; i++) {
+      const embed = cast.embeds[i];
+      console.log(`Embed ${i}:`, JSON.stringify(embed, null, 2));
       if ('url' in embed && embed.url) {
         previewImage = embed.url;
+        console.log('Found embed URL for preview:', previewImage);
         break;
       }
     }
@@ -37,8 +41,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Only use author's profile picture as fallback if no embed URL found
   if (!previewImage && cast?.author.pfp_url) {
+    console.log('No embed image found, using profile picture:', cast.author.pfp_url);
     previewImage = cast.author.pfp_url;
   }
+  
+  console.log('Final preview image:', previewImage);
   
   // Use real cast data for metadata if available
   const authorName = cast?.author.display_name || cast?.author.username || username;
