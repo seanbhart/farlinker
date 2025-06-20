@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
-import { fetchCastByIdentifier } from '@/lib/neynar';
+import { fetchCastByIdentifier, fetchCastByUrl } from '@/lib/neynar';
 
 export async function GET() {
-  const testHash = '0xf71a74c3';
-  
   console.log('Test Neynar API - Starting');
   console.log('NEYNAR_API_KEY exists:', !!process.env.NEYNAR_API_KEY);
   
   try {
-    const cast = await fetchCastByIdentifier(testHash);
+    // Test 1: Try with a short hash like the one in the example
+    const shortHash = '0xf71a74c3';
+    let cast = await fetchCastByIdentifier(shortHash);
+    
+    // Test 2: If that fails, try URL lookup
+    if (!cast) {
+      console.log('Testing URL lookup for swabbie.eth/0xf71a74c3');
+      cast = await fetchCastByUrl('swabbie.eth', '0xf71a74c3');
+    }
     
     return NextResponse.json({
       success: true,
@@ -18,7 +24,9 @@ export async function GET() {
         text: cast.text,
         author: cast.author.username,
         likes: cast.reactions.likes_count,
-      } : null
+        hash: cast.hash,
+      } : null,
+      testedUrl: 'swabbie.eth/0xf71a74c3'
     });
   } catch (error: any) {
     console.error('Test Neynar API - Error:', error);

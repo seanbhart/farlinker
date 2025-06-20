@@ -88,6 +88,7 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
   console.log('Fetching cast with identifier:', identifier);
 
   try {
+    // Try with the identifier as-is first (could be a short hash)
     const params = new URLSearchParams({
       identifier: identifier,
       type: 'hash',
@@ -107,6 +108,9 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Neynar API error:', response.status, response.statusText, errorText);
+      
+      // If it fails with a short hash, we might need to try a different approach
+      // Could try searching by URL or other methods
       return null;
     }
 
@@ -116,6 +120,56 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
     console.error('Error fetching cast from Neynar:', error);
     return null;
   }
+}
+
+// Function to fetch by Farcaster URL
+export async function fetchCastByUrl(username: string, shortHash: string): Promise<NeynarCast | null> {
+  const apiKey = process.env.NEYNAR_API_KEY;
+  
+  if (!apiKey) {
+    console.error('NEYNAR_API_KEY is not set');
+    return null;
+  }
+  
+  // Try both warpcast.com and farcaster.xyz URLs
+  const urls = [
+    `https://warpcast.com/${username}/${shortHash}`,
+    `https://farcaster.xyz/${username}/${shortHash}`
+  ];
+  
+  for (const castUrl of urls) {
+    console.log('Trying to fetch cast by URL:', castUrl);
+
+    try {
+      const params = new URLSearchParams({
+        identifier: castUrl,
+        type: 'url',
+      });
+
+      const response = await fetch(
+        `${NEYNAR_API_BASE}/cast?${params}`,
+        {
+          headers: {
+            'api_key': apiKey,
+            'accept': 'application/json',
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data: NeynarResponse = await response.json();
+        console.log('Successfully fetched cast by URL');
+        return data.cast;
+      } else {
+        const errorText = await response.text();
+        console.error(`Neynar API error for ${castUrl}:`, response.status, errorText);
+      }
+    } catch (error) {
+      console.error(`Error fetching cast from Neynar by URL ${castUrl}:`, error);
+    }
+  }
+  
+  return null;
 }
 
 export function formatCastUrl(username: string, hash: string): string {

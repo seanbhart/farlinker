@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { fetchCastByIdentifier } from '@/lib/neynar';
+import { fetchCastByIdentifier, fetchCastByUrl } from '@/lib/neynar';
 
 interface PageProps {
   params: Promise<{
@@ -16,7 +16,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Try to fetch cast data for better metadata
   const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
-  const cast = await fetchCastByIdentifier(formattedHash);
+  let cast = await fetchCastByIdentifier(formattedHash);
+  
+  // If hash lookup fails, try URL lookup
+  if (!cast) {
+    console.log('Hash lookup failed, trying URL lookup');
+    cast = await fetchCastByUrl(username, hash);
+  }
   
   console.log('Metadata generation - Cast found:', !!cast);
   console.log('Metadata generation - Cast text:', cast?.text?.substring(0, 100));
@@ -106,7 +112,13 @@ export default async function CastPage({ params }: PageProps) {
   }
   
   // Fetch cast data for display
-  const castData = await fetchCastByIdentifier(hash.startsWith('0x') ? hash : `0x${hash}`);
+  const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
+  let castData = await fetchCastByIdentifier(formattedHash);
+  
+  // If hash lookup fails, try URL lookup
+  if (!castData) {
+    castData = await fetchCastByUrl(username, hash);
+  }
   
   // For bots, render a simple preview page with debug info
   const debugInfo = (

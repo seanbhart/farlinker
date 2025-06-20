@@ -107,8 +107,8 @@ After your first deployment:
 
 2. **Test your deployment**:
    - Visit your deployment URL
-   - Test with a Farcaster URL: `https://your-deployment.vercel.app/dwr/0x2c51e5c4`
-   - Verify the preview image generates correctly
+   - Test with a Farcaster URL: `https://your-deployment.vercel.app/dwr/0x0de97199`
+   - Verify the preview generates correctly
    - Check that clicking redirects to Farcaster
 
 3. **Update Farcaster Manifest** (for Mini App functionality):

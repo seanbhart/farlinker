@@ -40,10 +40,10 @@ export default function Home() {
             </h2>
             <div className="space-y-2">
               <div className="font-mono text-sm bg-purple-700 p-3 rounded">
-                <span className="text-purple-300">Original:</span> farcaster.xyz/dwr/0x2c51e5c4
+                <span className="text-purple-300">Original:</span> farcaster.xyz/dwr/0x0de97199
               </div>
               <div className="font-mono text-sm bg-purple-700 p-3 rounded">
-                <span className="text-purple-300">Farlinker:</span> farlinker.xyz/dwr/0x2c51e5c4
+                <span className="text-purple-300">Farlinker:</span> farlinker.xyz/dwr/0x0de97199
               </div>
             </div>
           </div>
