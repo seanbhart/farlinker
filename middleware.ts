@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
+  console.log('Middleware - pathname:', pathname);
+  
   // Allow API routes, static files, and special routes to pass through
   if (
     pathname.startsWith('/api/') ||
