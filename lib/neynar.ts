@@ -35,6 +35,29 @@ interface NeynarCast {
   timestamp: string;
   embeds: Array<{
     url?: string;
+    metadata?: {
+      content_type?: string;
+      content_length?: number;
+      _status?: string;
+      image?: {
+        width_px?: number;
+        height_px?: number;
+      };
+      video?: {
+        duration_s?: number;
+        stream?: Array<{
+          codec_name?: string;
+          height_px?: number;
+          width_px?: number;
+        }>;
+      };
+      html?: {
+        favicon?: string;
+        ogImage?: string;
+        ogTitle?: string;
+        ogDescription?: string;
+      };
+    };
     cast_id?: {
       fid: number;
       hash: string;

@@ -128,7 +128,6 @@ After your first deployment:
 - Next.js 15 with App Router
 - TypeScript
 - Tailwind CSS
-- @vercel/og for image generation
 - @farcaster/frame-sdk for Frame support
 - Neynar API for cast data
 

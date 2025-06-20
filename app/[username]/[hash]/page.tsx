@@ -22,23 +22,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
   // Use the actual deployment URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
-  const previewImageUrl = `${baseUrl}/api/og/${username}/${hash}`;
   
-  // Farcaster Frame Embed JSON
-  const frameEmbed = {
-    version: "next",
-    imageUrl: previewImageUrl,
-    button: {
-      title: "View on Farcaster",
-      action: {
-        type: "launch_frame",
-        name: "Farlinker",
-        url: originalUrl,
-        splashImageUrl: `${baseUrl}/splash.png`,
-        splashBackgroundColor: "#8B5CF6"
+  // Extract image from cast embeds if available
+  let previewImage: string | undefined;
+  if (cast?.embeds && cast.embeds.length > 0) {
+    // Look for direct image URLs
+    const imageEmbed = cast.embeds.find(embed => 
+      embed.url && (
+        embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ||
+        embed.metadata?.content_type?.startsWith('image/')
+      )
+    );
+    
+    if (imageEmbed?.url) {
+      previewImage = imageEmbed.url;
+    } else {
+      // Look for Open Graph images from HTML embeds
+      const htmlEmbed = cast.embeds.find(embed => embed.metadata?.html?.ogImage);
+      if (htmlEmbed?.metadata?.html?.ogImage) {
+        previewImage = htmlEmbed.metadata.html.ogImage;
       }
     }
-  };
+  }
+  
+  // Use author's profile picture as fallback
+  if (!previewImage && cast?.author.pfp_url) {
+    previewImage = cast.author.pfp_url;
+  }
   
   // Use real cast data for metadata if available
   const authorName = cast?.author.display_name || cast?.author.username || username;
@@ -47,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     (cast.text.length > 160 ? cast.text.substring(0, 157) + '...' : cast.text) : 
     'View this cast on Farcaster';
   
-  return {
+  const metadata: Metadata = {
     title,
     description,
     metadataBase: new URL(baseUrl),
@@ -56,27 +66,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `${baseUrl}/${username}/${hash}`,
       siteName: 'Farlinker',
-      images: [
-        {
-          url: previewImageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
-        }
-      ],
       type: 'website',
     },
     twitter: {
-      card: 'summary_large_image',
+      card: previewImage ? 'summary_large_image' : 'summary',
       title,
       description,
-      images: [previewImageUrl],
       creator: `@${cast?.author.username || username}`,
     },
-    other: {
-      'fc:frame': JSON.stringify(frameEmbed),
-    },
   };
+  
+  // Only add images if we have them
+  if (previewImage) {
+    metadata.openGraph.images = [previewImage];
+    metadata.twitter.images = [previewImage];
+  }
+  
+  return metadata;
 }
 
 export default async function CastPage({ params }: PageProps) {
