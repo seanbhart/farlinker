@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@farcaster/frame-sdk": "^0.0.64",
-    "axios": "^1.10.0",
+    "@neynar/nodejs-sdk": "^2.46.0",
     "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

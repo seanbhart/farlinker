@@ -131,10 +131,12 @@ export async function fetchCastByUrl(username: string, shortHash: string): Promi
     return null;
   }
   
-  // Try both warpcast.com and farcaster.xyz URLs
+  // According to Neynar docs, we can use just the path part
+  // Try different URL formats
   const urls = [
     `https://warpcast.com/${username}/${shortHash}`,
-    `https://farcaster.xyz/${username}/${shortHash}`
+    `warpcast.com/${username}/${shortHash}`,
+    `${username}/${shortHash}`
   ];
   
   for (const castUrl of urls) {
