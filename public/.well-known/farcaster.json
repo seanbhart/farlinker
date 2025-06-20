@@ -1,0 +1,16 @@
+{
+  "accountAssociation": {
+    "header": "TODO: Generate this with Farcaster account",
+    "payload": "TODO: Generate this with Farcaster account",
+    "signature": "TODO: Generate this with Farcaster account"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Farlinker",
+    "iconUrl": "https://farlinker.xyz/icon.png",
+    "splashImageUrl": "https://farlinker.xyz/splash.png",
+    "splashBackgroundColor": "#8B5CF6",
+    "homeUrl": "https://farlinker.xyz",
+    "webhookUrl": "https://farlinker.xyz/api/webhook"
+  }
+}
