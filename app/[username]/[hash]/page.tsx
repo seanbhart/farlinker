@@ -18,8 +18,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
   const cast = await fetchCastByIdentifier(formattedHash);
   
-  // Construct the original Farcaster URL
-  const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
   // Use the actual deployment URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
   
