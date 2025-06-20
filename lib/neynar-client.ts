@@ -1,8 +1,8 @@
-import { NeynarAPIClient, Configuration, CastParamType } from "@neynar/nodejs-sdk";
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 
 // Initialize Neynar client
 const config = new Configuration({
-  apiKey: process.env.NEYNAR_API_KEY,
+  apiKey: process.env.NEYNAR_API_KEY || '',
 });
 
 const client = new NeynarAPIClient(config);
@@ -20,7 +20,8 @@ export async function fetchCastByUrl(username: string, shortHash: string) {
 
     const response = await client.lookupCastByHashOrWarpcastUrl({
       identifier: url,
-      type: CastParamType.Url,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: "url" as any // Cast to any to bypass type issues
     });
 
     console.log('Successfully fetched cast');

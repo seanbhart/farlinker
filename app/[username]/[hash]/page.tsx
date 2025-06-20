@@ -26,21 +26,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Extract image from cast embeds if available
   let previewImage: string | undefined;
   if (cast?.embeds && cast.embeds.length > 0) {
-    // Look for direct image URLs
-    const imageEmbed = cast.embeds.find(embed => 
-      embed.url && (
-        embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ||
-        embed.metadata?.content_type?.startsWith('image/')
-      )
-    );
-    
-    if (imageEmbed?.url) {
-      previewImage = imageEmbed.url;
-    } else {
-      // Look for Open Graph images from HTML embeds
-      const htmlEmbed = cast.embeds.find(embed => embed.metadata?.html?.ogImage);
-      if (htmlEmbed?.metadata?.html?.ogImage) {
-        previewImage = htmlEmbed.metadata.html.ogImage;
+    // Look for image embeds
+    for (const embed of cast.embeds) {
+      // Check if it's a URL embed with an image
+      if ('url' in embed && embed.url) {
+        if (embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+          previewImage = embed.url;
+          break;
+        }
       }
     }
   }

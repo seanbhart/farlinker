@@ -17,7 +17,7 @@ export async function GET() {
       cast: cast ? {
         text: cast.text,
         author: cast.author.username,
-        likes: cast.reactions.likes.count,
+        likes: cast.reactions.likes_count,
         hash: cast.hash,
       } : null,
       testedUrl: 'swabbie.eth/0xf71a74c3'
