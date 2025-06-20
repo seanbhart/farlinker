@@ -20,7 +20,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Construct the original Farcaster URL
   const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
-  const previewImageUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.xyz'}/api/og/${username}/${hash}`;
+  // Use the actual deployment URL
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
+  const previewImageUrl = `${baseUrl}/api/og/${username}/${hash}`;
   
   // Farcaster Frame Embed JSON
   const frameEmbed = {
@@ -32,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         type: "launch_frame",
         name: "Farlinker",
         url: originalUrl,
-        splashImageUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.xyz'}/splash.png`,
+        splashImageUrl: `${baseUrl}/splash.png`,
         splashBackgroundColor: "#8B5CF6"
       }
     }
@@ -48,10 +50,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    metadataBase: new URL(baseUrl),
     openGraph: {
       title,
       description,
-      images: [previewImageUrl],
+      url: `${baseUrl}/${username}/${hash}`,
+      siteName: 'Farlinker',
+      images: [
+        {
+          url: previewImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ],
       type: 'website',
     },
     twitter: {
@@ -59,6 +71,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       images: [previewImageUrl],
+      creator: `@${cast?.author.username || username}`,
     },
     other: {
       'fc:frame': JSON.stringify(frameEmbed),
@@ -80,7 +93,15 @@ export default async function CastPage({ params }: PageProps) {
     redirect(originalUrl);
   }
   
-  // For bots, render a simple preview page
+  // For bots, render a simple preview page with debug info
+  const debugInfo = process.env.NODE_ENV === 'development' ? (
+    <div className="mt-4 p-4 bg-gray-100 rounded text-xs text-gray-600">
+      <p>Debug: User Agent: {userAgent.substring(0, 50)}...</p>
+      <p>Is Bot: {isBot ? 'Yes' : 'No'}</p>
+      <p>Base URL: {process.env.NEXT_PUBLIC_BASE_URL}</p>
+    </div>
+  ) : null;
+  
   return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
@@ -90,12 +111,16 @@ export default async function CastPage({ params }: PageProps) {
         <p className="text-gray-600 mb-6">
           Loading cast from @{username}...
         </p>
+        <p className="text-sm text-gray-500 mb-6">
+          Hash: {hash}
+        </p>
         <a 
           href={`https://farcaster.xyz/${username}/${hash}`}
           className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
         >
           View on Farcaster
         </a>
+        {debugInfo}
       </div>
     </div>
   );
