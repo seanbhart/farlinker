@@ -19,6 +19,8 @@ export async function GET() {
         author: cast.author.username,
         likes: cast.reactions.likes_count,
         hash: cast.hash,
+        embeds: cast.embeds,
+        author_pfp: cast.author.pfp_url,
       } : null,
       testedUrl: 'swabbie.eth/0xf71a74c3'
     });
