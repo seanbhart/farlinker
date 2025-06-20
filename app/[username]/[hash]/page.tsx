@@ -26,19 +26,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Extract image from cast embeds if available
   let previewImage: string | undefined;
   if (cast?.embeds && cast.embeds.length > 0) {
+    console.log('Cast embeds:', JSON.stringify(cast.embeds, null, 2));
     // Look for image embeds
     for (const embed of cast.embeds) {
       // Check if it's a URL embed with an image
       if ('url' in embed && embed.url) {
-        if (embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        console.log('Found URL embed:', embed.url);
+        // Check if it's a direct image URL
+        if (embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
+            embed.url.includes('imgur.com') ||
+            embed.url.includes('i.imgur.com')) {
           previewImage = embed.url;
           break;
         }
       }
+      // Check for cast embeds with images
+      if ('cast' in embed && embed.cast) {
+        // If this is a quoted cast, we might want to check its embeds too
+        continue;
+      }
     }
   }
   
-  // Use author's profile picture as fallback
+  // Only use author's profile picture as fallback if no embed image found
   if (!previewImage && cast?.author.pfp_url) {
     previewImage = cast.author.pfp_url;
   }
