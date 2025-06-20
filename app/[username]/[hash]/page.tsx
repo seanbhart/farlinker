@@ -85,7 +85,12 @@ export default async function CastPage({ params }: PageProps) {
   const userAgent = headersList.get('user-agent') || '';
   
   // Check if this is a bot/crawler (for preview generation)
-  const isBot = /bot|crawler|spider|crawling|facebook|twitter|telegram|discord|slack/i.test(userAgent);
+  // Use word boundaries to avoid false matches
+  const isBot = /\b(bot|crawler|spider|crawling|facebookexternalhit|twitterbot|telegrambot|discordbot|slackbot|linkedinbot)\b/i.test(userAgent);
+  
+  // Log for debugging (remove in production)
+  console.log('User Agent:', userAgent);
+  console.log('Is Bot:', isBot);
   
   // If not a bot, redirect to the original Farcaster URL
   if (!isBot) {
