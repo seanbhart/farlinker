@@ -83,7 +83,7 @@ In the Vercel dashboard, go to your project settings and add these environment v
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `NEXT_PUBLIC_BASE_URL` | `https://your-project-name.vercel.app` | Your Vercel deployment URL (update after first deploy) |
+| `NEXT_PUBLIC_BASE_URL` | `https://farlinker.vercel.app` | Your exact Vercel deployment URL (update after first deploy) |
 | `NEYNAR_API_KEY` | `your_neynar_api_key` | Get from [neynar.com](https://neynar.com) |
 
 ### 4. Configure Custom Domain (Optional)

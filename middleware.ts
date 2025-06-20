@@ -17,10 +17,14 @@ export function middleware(request: NextRequest) {
   }
   
   // Check if this is a valid Farcaster post URL pattern
-  const postPattern = /^\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9]+)$/;
+  // Allow dots in username for ENS names like swabbie.eth
+  // Hash can optionally start with 0x
+  const postPattern = /^\/([a-zA-Z0-9._-]+)\/(0x)?([a-zA-Z0-9]+)$/;
   const match = pathname.match(postPattern);
   
   if (!match) {
+    // Log for debugging
+    console.log(`Invalid URL pattern: ${pathname}`);
     // Invalid URL pattern, redirect to home
     return NextResponse.redirect(new URL('/', request.url));
   }
