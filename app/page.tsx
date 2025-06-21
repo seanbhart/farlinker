@@ -21,7 +21,7 @@ export default function Home() {
               </li>
               <li className="flex">
                 <span className="text-purple-400 mr-3 font-medium">2.</span>
-                <span>Replace "farcaster.xyz" with "farlinker.xyz"</span>
+                <span>Replace &quot;farcaster.xyz&quot; with &quot;farlinker.xyz&quot;</span>
               </li>
               <li className="flex">
                 <span className="text-purple-400 mr-3 font-medium">3.</span>
