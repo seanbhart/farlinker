@@ -17,66 +17,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
   
-  console.log('Metadata generation - Cast found:', !!cast);
-  console.log('Metadata generation - Cast text:', cast?.text?.substring(0, 100));
-  
-  // Use the actual deployment URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
   
-  // Extract image from cast embeds if available
+  // Extract first image from cast embeds if available
   let previewImage: string | undefined;
+  const embedUrls: string[] = [];
+  
   if (cast?.embeds && cast.embeds.length > 0) {
-    console.log('Checking embeds for images, total embeds:', cast.embeds.length);
-    // Look through all embeds to find one with a URL
-    for (let i = 0; i < cast.embeds.length; i++) {
-      const embed = cast.embeds[i];
-      console.log(`Embed ${i}:`, JSON.stringify(embed, null, 2));
+    for (const embed of cast.embeds) {
       if ('url' in embed && embed.url) {
-        previewImage = embed.url;
-        console.log('Found embed URL for preview:', previewImage);
-        break;
+        embedUrls.push(embed.url);
+        // Use the first embed URL as preview image (only if it's actually an image)
+        if (!previewImage) {
+          previewImage = embed.url;
+        }
       }
     }
   }
   
-  // Only use author's profile picture as fallback if no embed URL found
-  if (!previewImage && cast?.author.pfp_url) {
-    console.log('No embed image found, using profile picture:', cast.author.pfp_url);
-    previewImage = cast.author.pfp_url;
+  // Clean up the cast text by removing embedded URLs
+  let cleanText = cast?.text || '';
+  if (cast && embedUrls.length > 0) {
+    // Remove any URLs that match embeds to avoid duplication
+    embedUrls.forEach(url => {
+      cleanText = cleanText.replace(url, '').trim();
+    });
+    // Clean up any extra whitespace
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
   }
   
-  console.log('Final preview image:', previewImage);
-  
-  // Use real cast data for metadata if available
-  const authorName = cast?.author.display_name || cast?.author.username || username;
-  
-  // Format like Twitter: split long text between title and description
-  // Twitter shows ~70 chars in title and ~200 chars in description
-  let title: string;
-  let description: string;
-  
-  if (cast?.text) {
-    if (cast.text.length <= 70) {
-      // Short text: use full text as title, author as description
-      title = cast.text;
-      description = `${authorName} on Farcaster`;
-    } else {
-      // Long text: split between title and description
-      title = cast.text.substring(0, 70);
-      // Continue the text in description, showing up to 200 more characters
-      const remainingText = cast.text.substring(70);
-      if (remainingText.length > 0) {
-        description = remainingText.length > 200 ? 
-          remainingText.substring(0, 197) + '...' : 
-          remainingText;
-      } else {
-        description = `${authorName} on Farcaster`;
-      }
-    }
-  } else {
-    title = 'View this cast on Farcaster';
-    description = `${authorName} on Farcaster`;
-  }
+  // Set metadata according to requirements:
+  // - Title: Full post text (without embedded URLs)
+  // - Description: Username
+  const title = cleanText || 'Loading cast content...';
+  const description = cast ? `@${cast.author.username}` : `@${username}`;
   
   const metadata: Metadata = {
     title,
@@ -86,8 +60,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: `${baseUrl}/${username}/${hash}`,
-      siteName: 'Farlinker',
-      type: 'website',
+      siteName: 'farlinker.xyz',
+      type: 'article',
       locale: 'en_US',
       alternateLocale: 'en',
     },
@@ -114,13 +88,8 @@ export default async function CastPage({ params }: PageProps) {
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
-  console.log('CastPage - User Agent:', userAgent);
-  
   // Check if this is a bot/crawler (for preview generation)
-  // Use word boundaries to avoid false matches
   const isBot = /\b(bot|crawler|spider|crawling|facebookexternalhit|twitterbot|telegrambot|discordbot|slackbot|linkedinbot|opengraph|metainspector|whatsapp|telegram)\b/i.test(userAgent);
-  
-  console.log('CastPage - Is Bot:', isBot);
   
   // Prepare the redirect URL for non-bot users
   const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
@@ -128,17 +97,6 @@ export default async function CastPage({ params }: PageProps) {
   
   // Fetch cast data for display
   const castData = await fetchCastByUrl(username, hash);
-  
-  // For bots, render a simple preview page with debug info
-  const debugInfo = (
-    <div className="mt-4 p-4 bg-gray-100 rounded text-xs text-gray-600">
-      <p>Debug: User Agent: {userAgent.substring(0, 50)}...</p>
-      <p>Is Bot: {isBot ? 'Yes' : 'No'}</p>
-      <p>Base URL: {process.env.NEXT_PUBLIC_BASE_URL}</p>
-      <p>Cast found: {castData ? 'Yes' : 'No'}</p>
-      {castData && <p>Cast text: {castData.text.substring(0, 100)}...</p>}
-    </div>
-  );
   
   return (
     <>
@@ -179,7 +137,6 @@ export default async function CastPage({ params }: PageProps) {
           >
             View on Farcaster
           </a>
-          {debugInfo}
         </div>
       </div>
     </>
