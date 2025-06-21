@@ -17,23 +17,23 @@ export async function GET(request: NextRequest) {
       (
         <div
           style={{
-            background: '#17101f',
+            background: 'transparent',
             width: '100%',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
-            padding: '20px',
+            padding: '12px',
           }}
         >
           {/* Profile picture */}
           {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
           <img
             src={pfp}
-            width={60}
-            height={60}
+            width={48}
+            height={48}
             style={{
               borderRadius: '50%',
-              marginRight: '16px',
+              marginRight: '12px',
             }}
           />
           
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
           >
             <span
               style={{
-                fontSize: '24px',
+                fontSize: '20px',
                 fontWeight: 600,
               }}
             >
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
             </span>
             <span
               style={{
-                fontSize: '18px',
+                fontSize: '16px',
                 color: '#9CA3AF',
               }}
             >
@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
         </div>
       ),
       {
-        width: 600,
-        height: 120,
+        width: 320,
+        height: 80,
       }
     );
   } catch (e) {
