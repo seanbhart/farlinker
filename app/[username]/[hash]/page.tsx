@@ -32,9 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
-  // Check if this is Apple Messages, WhatsApp, or Telegram
-  const isMessagingApp = /\b(whatsapp|telegram|imessage|messages)\b/i.test(userAgent) ||
-    userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
+  // Check if this is Apple Messages specifically
+  const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
@@ -74,12 +73,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   let title: string;
   let description: string;
   
-  if (isMessagingApp) {
-    // For messaging apps: put display name at beginning of title, no description
+  if (isAppleMessages) {
+    // For Apple Messages: put display name at beginning of title, no description
     title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
     description = '';
   } else {
-    // For other platforms: clean title, display name in description
+    // For all other platforms: clean title, display name in description
     title = cleanText || 'Loading cast content...';
     description = cast ? `${displayName} on Farcaster` : 'Loading...';
   }
