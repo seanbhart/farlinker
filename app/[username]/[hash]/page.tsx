@@ -64,12 +64,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: `${baseUrl}/${username}/${hash}`,
       siteName: 'Farlinker',
       type: 'website',
+      locale: 'en_US',
+      alternateLocale: 'en',
     },
     twitter: {
       card: previewImage ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: `@${cast?.author.username || username}`,
+      site: '@farlinker',
     },
   };
   
@@ -87,13 +90,13 @@ export default async function CastPage({ params }: PageProps) {
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
+  console.log('CastPage - User Agent:', userAgent);
+  
   // Check if this is a bot/crawler (for preview generation)
   // Use word boundaries to avoid false matches
-  const isBot = /\b(bot|crawler|spider|crawling|facebookexternalhit|twitterbot|telegrambot|discordbot|slackbot|linkedinbot)\b/i.test(userAgent);
+  const isBot = /\b(bot|crawler|spider|crawling|facebookexternalhit|twitterbot|telegrambot|discordbot|slackbot|linkedinbot|opengraph|metainspector|whatsapp|telegram)\b/i.test(userAgent);
   
-  // Log for debugging (remove in production)
-  console.log('User Agent:', userAgent);
-  console.log('Is Bot:', isBot);
+  console.log('CastPage - Is Bot:', isBot);
   
   // If not a bot, redirect to the original Farcaster URL
   if (!isBot) {
