@@ -130,38 +130,44 @@ export default async function CastPage({ params }: PageProps) {
   return (
     <>
       {shouldRedirect && <ClientRedirect url={originalUrl} delay={10} />}
-      <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-purple-900 mb-4">
-            Farcaster Cast Preview
-          </h1>
-          {castData ? (
-            <>
-              <div className="mb-6">
-                <p className="text-sm text-gray-500 mb-2">@{castData.author.username}</p>
-                <p className="text-gray-700">{castData.text}</p>
-              </div>
-              <p className="text-sm text-gray-500 mb-6">
-                {castData.reactions?.likes_count || 0} likes · {castData.reactions?.recasts_count || 0} recasts
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-gray-600 mb-6">
-                Loading cast from @{username}...
-              </p>
-              <p className="text-sm text-gray-500 mb-6">
-                Hash: {hash}
-              </p>
-            </>
-          )}
-          <a 
-            href={originalUrl}
-            className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            View on Farcaster
-          </a>
-        </div>
+      <div className="min-h-screen" style={{ backgroundColor: '#17101f' }}>
+        {shouldRedirect ? (
+          <p className="text-white text-sm p-4">navigating to farcaster.xyz...</p>
+        ) : (
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
+              <h1 className="text-2xl font-bold text-purple-900 mb-4">
+                Farcaster Cast Preview
+              </h1>
+              {castData ? (
+                <>
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-500 mb-2">@{castData.author.username}</p>
+                    <p className="text-gray-700">{castData.text}</p>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-6">
+                    {castData.reactions?.likes_count || 0} likes · {castData.reactions?.recasts_count || 0} recasts
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-6">
+                    Loading cast from @{username}...
+                  </p>
+                  <p className="text-sm text-gray-500 mb-6">
+                    Hash: {hash}
+                  </p>
+                </>
+              )}
+              <a 
+                href={originalUrl}
+                className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                View on Farcaster
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
