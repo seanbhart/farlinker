@@ -35,6 +35,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Check if this is Apple Messages specifically
   const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
   
+  // Check for other messaging platforms
+  const isWhatsApp = userAgent.toLowerCase().includes('whatsapp');
+  const isTelegram = userAgent.toLowerCase().includes('telegrambot');
+  
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
   
@@ -49,8 +53,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     for (const embed of cast.embeds) {
       if ('url' in embed && embed.url) {
         embedUrls.push(embed.url);
-        // Use the first embed URL as preview image (only if it's actually an image)
-        if (!previewImage) {
+        // Check if this is actually an image URL
+        const isImage = embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
+                       embed.url.includes('imagedelivery.net') ||
+                       embed.url.includes('imgur.com') ||
+                       embed.url.includes('i.imgur.com');
+        
+        // Use the first image URL as preview image
+        if (!previewImage && isImage) {
           previewImage = embed.url;
           hasEmbeddedImage = true;
         }
@@ -115,7 +125,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Only add images if we have them
   if (previewImage) {
-    metadata.openGraph!.images = [previewImage];
+    // For author profile pictures on certain platforms, specify smaller dimensions
+    if (!hasEmbeddedImage && (isAppleMessages || isWhatsApp)) {
+      metadata.openGraph!.images = [{
+        url: previewImage,
+        width: 200,
+        height: 200,
+        alt: displayName,
+      }];
+    } else {
+      metadata.openGraph!.images = [{
+        url: previewImage,
+        width: hasEmbeddedImage ? 1200 : 400,
+        height: hasEmbeddedImage ? 630 : 400,
+        alt: hasEmbeddedImage ? `Post by ${displayName}` : displayName,
+      }];
+    }
     metadata.twitter!.images = [previewImage];
   }
   
