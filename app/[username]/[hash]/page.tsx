@@ -28,6 +28,14 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { username, hash } = await params;
   
+  // Get headers to check user agent
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  
+  // Check if this is Apple Messages, WhatsApp, or Telegram
+  const isMessagingApp = /\b(whatsapp|telegram|imessage|messages)\b/i.test(userAgent) ||
+    userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
+  
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
   
@@ -60,13 +68,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     cleanText = cleanText.replace(/\s+/g, ' ').trim();
   }
   
-  // Set metadata according to requirements:
-  // - Title: Full post text (without embedded URLs) + display name on new line
-  // - Description: Commented out for testing
+  // Set metadata according to requirements based on platform
   const displayName = cast?.author.display_name || cast?.author.username || username;
-  const title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
-  // const description = cast ? `${displayName} on Farcaster` : 'Loading...';
-  const description = '';
+  
+  let title: string;
+  let description: string;
+  
+  if (isMessagingApp) {
+    // For messaging apps: put display name at beginning of title, no description
+    title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
+    description = '';
+  } else {
+    // For other platforms: clean title, display name in description
+    title = cleanText || 'Loading cast content...';
+    description = cast ? `${displayName} on Farcaster` : 'Loading...';
+  }
   
   const metadata: Metadata = {
     title,
