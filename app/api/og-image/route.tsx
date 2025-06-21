@@ -43,59 +43,63 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
-            padding: '10px',
+            justifyContent: 'center',
           }}
         >
-          {/* Profile picture */}
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: '50%',
-              backgroundImage: `url(${pfp})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              marginRight: '12px',
-              flexShrink: 0,
-            }}
-          />
-          
-          {/* Text */}
           <div
             style={{
               display: 'flex',
-              flexDirection: 'column',
-              color: 'white',
-              overflow: 'hidden',
+              alignItems: 'center',
+              gap: '40px',
             }}
           >
+            {/* Profile picture */}
             <div
               style={{
-                fontSize: 20,
-                fontWeight: 600,
-                lineHeight: '24px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                width: 200,
+                height: 200,
+                borderRadius: '50%',
+                backgroundImage: `url(${pfp})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                flexShrink: 0,
               }}
-            >
-              {displayName}
-            </div>
+            />
+            
+            {/* Text */}
             <div
               style={{
-                fontSize: 16,
-                color: '#9CA3AF',
-                lineHeight: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                color: 'white',
               }}
             >
-              on Farcaster
+              <div
+                style={{
+                  fontSize: 72,
+                  fontWeight: 700,
+                  lineHeight: '80px',
+                  marginBottom: '10px',
+                }}
+              >
+                {displayName}
+              </div>
+              <div
+                style={{
+                  fontSize: 48,
+                  color: '#9CA3AF',
+                  lineHeight: '56px',
+                }}
+              >
+                on Farcaster
+              </div>
             </div>
           </div>
         </div>
       ),
       {
-        width: 320,
-        height: 80,
+        width: 1200,
+        height: 630,
       }
     );
     
