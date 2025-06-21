@@ -3,8 +3,19 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const userAgent = request.headers.get('user-agent') || '';
   
   console.log('Middleware - pathname:', pathname);
+  console.log('Middleware - user-agent:', userAgent.substring(0, 50) + '...');
+  
+  // Check if this is a bot/crawler (including OG validators)
+  const isBot = /\b(bot|crawler|spider|crawling|facebookexternalhit|twitterbot|telegrambot|discordbot|slackbot|linkedinbot|opengraph|metainspector|whatsapp|telegram|validator|preview|scraper|curl|wget|python|ruby|perl|java|go)\b/i.test(userAgent);
+  
+  // If it's a bot and we're on the non-www domain, don't redirect
+  // This allows validators to get metadata without following redirects
+  if (isBot && request.headers.get('host') === 'farlinker.xyz') {
+    console.log('Bot detected on non-www, serving content directly');
+  }
   
   // Allow API routes, static files, and special routes to pass through
   if (

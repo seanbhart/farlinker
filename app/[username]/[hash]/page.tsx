@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { fetchCastByUrl } from '@/lib/neynar-client';
+import { ClientRedirect } from './client-redirect';
 
 interface PageProps {
   params: Promise<{
@@ -122,11 +122,9 @@ export default async function CastPage({ params }: PageProps) {
   
   console.log('CastPage - Is Bot:', isBot);
   
-  // If not a bot, redirect to the original Farcaster URL
-  if (!isBot) {
-    const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
-    redirect(originalUrl);
-  }
+  // Prepare the redirect URL for non-bot users
+  const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
+  const shouldRedirect = !isBot;
   
   // Fetch cast data for display
   const castData = await fetchCastByUrl(username, hash);
@@ -143,39 +141,47 @@ export default async function CastPage({ params }: PageProps) {
   );
   
   return (
-    <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-purple-900 mb-4">
-          Farcaster Cast Preview
-        </h1>
-        {castData ? (
-          <>
-            <div className="mb-6">
-              <p className="text-sm text-gray-500 mb-2">@{castData.author.username}</p>
-              <p className="text-gray-700">{castData.text}</p>
+    <>
+      {shouldRedirect && <ClientRedirect url={originalUrl} delay={1000} />}
+      <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
+          <h1 className="text-2xl font-bold text-purple-900 mb-4">
+            Farcaster Cast Preview
+          </h1>
+          {shouldRedirect && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-700">Redirecting to Farcaster in a moment...</p>
             </div>
-            <p className="text-sm text-gray-500 mb-6">
-              {castData.reactions.likes_count} likes · {castData.reactions.recasts_count} recasts
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-gray-600 mb-6">
-              Loading cast from @{username}...
-            </p>
-            <p className="text-sm text-gray-500 mb-6">
-              Hash: {hash}
-            </p>
-          </>
-        )}
-        <a 
-          href={`https://farcaster.xyz/${username}/${hash}`}
-          className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          View on Farcaster
-        </a>
-        {debugInfo}
+          )}
+          {castData ? (
+            <>
+              <div className="mb-6">
+                <p className="text-sm text-gray-500 mb-2">@{castData.author.username}</p>
+                <p className="text-gray-700">{castData.text}</p>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">
+                {castData.reactions.likes_count} likes · {castData.reactions.recasts_count} recasts
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-gray-600 mb-6">
+                Loading cast from @{username}...
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                Hash: {hash}
+              </p>
+            </>
+          )}
+          <a 
+            href={originalUrl}
+            className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            View on Farcaster
+          </a>
+          {debugInfo}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
