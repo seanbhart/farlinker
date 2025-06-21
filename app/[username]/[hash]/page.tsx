@@ -97,7 +97,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       creator: `@${cast?.author.username || username}`,
       site: '@farlinker',
-      domain: 'farlinker.xyz',
     },
   };
   
