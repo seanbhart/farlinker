@@ -37,7 +37,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Check for other messaging platforms
   const isWhatsApp = userAgent.toLowerCase().includes('whatsapp');
-  const isTelegram = userAgent.toLowerCase().includes('telegrambot');
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
