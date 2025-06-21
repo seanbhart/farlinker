@@ -62,6 +62,33 @@ export default function Home() {
             </p>
           </div>
           
+          <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 border border-gray-800 mb-8">
+            <h2 className="text-xl font-medium text-white mb-6">
+              See the difference
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <p className="text-gray-400 text-sm mb-3">Before (Farcaster link):</p>
+                <img 
+                  src="/apple_messages_farcaster.png" 
+                  alt="Farcaster link preview in Apple Messages"
+                  className="rounded-lg border border-gray-700 w-full max-w-md mx-auto"
+                />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-3">After (Farlinker):</p>
+                <img 
+                  src="/apple_messages_farlinker.png" 
+                  alt="Farlinker link preview in Apple Messages"
+                  className="rounded-lg border border-gray-700 w-full max-w-md mx-auto"
+                />
+              </div>
+            </div>
+            <p className="text-gray-500 text-sm mt-6 text-center">
+              Farlinker provides rich previews with full cast content, author info, and embedded images
+            </p>
+          </div>
+          
           <div className="mt-12 text-center text-gray-500">
             <p>Made for the Farcaster community with 💜</p>
           </div>
