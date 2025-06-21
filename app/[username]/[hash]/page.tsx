@@ -3,6 +3,20 @@ import { headers } from 'next/headers';
 import { fetchCastByUrl } from '@/lib/neynar-client';
 import { ClientRedirect } from './client-redirect';
 
+interface CastWithReactions {
+  author: {
+    username: string;
+    display_name?: string;
+    pfp_url?: string;
+  };
+  text: string;
+  embeds?: Array<{ url?: string }>;
+  reactions?: {
+    likes_count?: number;
+    recasts_count?: number;
+  };
+}
+
 interface PageProps {
   params: Promise<{
     username: string;
@@ -96,7 +110,7 @@ export default async function CastPage({ params }: PageProps) {
   const shouldRedirect = !isBot;
   
   // Fetch cast data for display
-  const castData = await fetchCastByUrl(username, hash);
+  const castData = await fetchCastByUrl(username, hash) as CastWithReactions | null;
   
   return (
     <>
@@ -118,7 +132,7 @@ export default async function CastPage({ params }: PageProps) {
                 <p className="text-gray-700">{castData.text}</p>
               </div>
               <p className="text-sm text-gray-500 mb-6">
-                {castData.reactions.likes_count} likes · {castData.reactions.recasts_count} recasts
+                {castData.reactions?.likes_count || 0} likes · {castData.reactions?.recasts_count || 0} recasts
               </p>
             </>
           ) : (
