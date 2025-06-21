@@ -50,11 +50,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Use real cast data for metadata if available
   const authorName = cast?.author.display_name || cast?.author.username || username;
   
-  // Format like Twitter: title is the cast content, description is author/context
-  const title = cast?.text ? 
-    (cast.text.length > 70 ? cast.text.substring(0, 67) + '...' : cast.text) : 
-    'View this cast on Farcaster';
-  const description = `${authorName} on Farcaster`;
+  // Format like Twitter: split long text between title and description
+  // Twitter shows ~70 chars in title and ~200 chars in description
+  let title: string;
+  let description: string;
+  
+  if (cast?.text) {
+    if (cast.text.length <= 70) {
+      // Short text: use full text as title, author as description
+      title = cast.text;
+      description = `${authorName} on Farcaster`;
+    } else {
+      // Long text: split between title and description
+      title = cast.text.substring(0, 70);
+      // Continue the text in description, showing up to 200 more characters
+      const remainingText = cast.text.substring(70);
+      if (remainingText.length > 0) {
+        description = remainingText.length > 200 ? 
+          remainingText.substring(0, 197) + '...' : 
+          remainingText;
+      } else {
+        description = `${authorName} on Farcaster`;
+      }
+    }
+  } else {
+    title = 'View this cast on Farcaster';
+    description = `${authorName} on Farcaster`;
+  }
   
   const metadata: Metadata = {
     title,
@@ -75,6 +97,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       creator: `@${cast?.author.username || username}`,
       site: '@farlinker',
+      domain: 'farlinker.xyz',
     },
   };
   
