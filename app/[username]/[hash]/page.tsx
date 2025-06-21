@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
   
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.xyz';
   
   // Extract first image from cast embeds if available
   let previewImage: string | undefined;
@@ -65,23 +65,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
+  // Track if we're using a composite image
+  let isCompositeImage = false;
+  
   // If no embedded image, handle differently based on platform
   if (!previewImage && cast?.author.pfp_url) {
     const displayName = cast.author.display_name || cast.author.username;
     
-    // For Apple Messages and WhatsApp without embedded images, create a composite image
+    // For Apple Messages and WhatsApp without embedded images, try composite image
     if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
-      // Create composite image with profile pic and name
-      const encodedPfp = encodeURIComponent(cast.author.pfp_url);
-      const encodedName = encodeURIComponent(displayName);
-      previewImage = `${baseUrl}/api/og-image?pfp=${encodedPfp}&name=${encodedName}`;
-      // Treat composite images as "embedded" to use large card format
-      hasEmbeddedImage = true;
-    } else if (!isAppleMessages && !isWhatsApp) {
-      // For other platforms, just use the profile picture
+      try {
+        // Create composite image with profile pic and name
+        const ogImageUrl = new URL('/api/og-image', baseUrl);
+        ogImageUrl.searchParams.set('pfp', cast.author.pfp_url);
+        ogImageUrl.searchParams.set('name', displayName);
+        previewImage = ogImageUrl.toString();
+        isCompositeImage = true;
+        console.log('[Metadata] Generated composite image URL:', previewImage);
+        console.log('[Metadata] Profile pic URL:', cast.author.pfp_url);
+        console.log('[Metadata] Display name:', displayName);
+      } catch (error) {
+        console.error('[Metadata] Failed to generate composite image:', error);
+        // Fall back to no image for Apple Messages
+        if (!isAppleMessages) {
+          previewImage = cast.author.pfp_url;
+        }
+      }
+    } else if (!isAppleMessages) {
+      // For other platforms (not Apple Messages), use the profile picture
       previewImage = cast.author.pfp_url;
+      // Keep hasEmbeddedImage as false so it uses the small card format
     }
-    // For Apple Messages and WhatsApp with no composite fallback, no image at all
+    
+    // Log for debugging
+    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}`);
   }
   
   // Clean up the cast text by removing embedded URLs
@@ -125,8 +142,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       alternateLocale: 'en',
     },
     twitter: {
-      // Use large image card only for embedded images, small card for profile pics
-      card: hasEmbeddedImage ? 'summary_large_image' : 'summary',
+      // Use large image card only for embedded images, small card for profile pics and composite images
+      card: (hasEmbeddedImage && !isCompositeImage) ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: `@${cast?.author.username || username}`,
@@ -136,11 +153,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Only add images if we have them
   if (previewImage) {
+    // Determine appropriate dimensions based on image type
+    let imageWidth: number;
+    let imageHeight: number;
+    let imageAlt: string;
+    
+    if (isCompositeImage) {
+      // Composite images are 320x80
+      imageWidth = 320;
+      imageHeight = 80;
+      imageAlt = `${displayName} on Farcaster`;
+    } else if (hasEmbeddedImage) {
+      // Embedded images use large format
+      imageWidth = 1200;
+      imageHeight = 630;
+      imageAlt = `Post by ${displayName}`;
+    } else {
+      // Profile pictures use square format
+      imageWidth = 400;
+      imageHeight = 400;
+      imageAlt = displayName;
+    }
+    
     metadata.openGraph!.images = [{
       url: previewImage,
-      width: hasEmbeddedImage ? 1200 : 400,
-      height: hasEmbeddedImage ? 630 : 400,
-      alt: hasEmbeddedImage ? `Post by ${displayName}` : displayName,
+      width: imageWidth,
+      height: imageHeight,
+      alt: imageAlt,
     }];
     metadata.twitter!.images = [previewImage];
   }
