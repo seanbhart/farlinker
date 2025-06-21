@@ -63,7 +63,7 @@ export default function Home() {
           </div>
           
           <div className="mt-12 text-center text-gray-500">
-            <p>Built for the Farcaster community</p>
+            <p>Made for the Farcaster community with 💜</p>
           </div>
         </div>
       </div>

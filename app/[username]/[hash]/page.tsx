@@ -61,10 +61,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   
   // Set metadata according to requirements:
-  // - Title: Full post text (without embedded URLs)
-  // - Description: Username
-  const title = cleanText || 'Loading cast content...';
-  const description = cast ? `@${cast.author.username}` : `@${username}`;
+  // - Title: Full post text (without embedded URLs) + display name on new line
+  // - Description: Commented out for testing
+  const displayName = cast?.author.display_name || cast?.author.username || username;
+  const title = cast ? `${cleanText}\n\n${displayName} on Farcaster` : 'Loading cast content...';
+  // const description = cast ? `${displayName} on Farcaster` : 'Loading...';
+  const description = '';
   
   const metadata: Metadata = {
     title,
