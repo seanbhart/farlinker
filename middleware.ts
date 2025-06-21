@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     console.log('Bot detected on non-www, serving content directly');
   }
   
-  // Allow API routes, static files, and special routes to pass through
+  // Allow API routes, static files, images, and special routes to pass through
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
@@ -27,7 +27,15 @@ export function middleware(request: NextRequest) {
     pathname === '/splash.png' ||
     pathname === '/apple-touch-icon.png' ||
     pathname === '/apple-touch-icon-precomposed.png' ||
-    pathname === '/.well-known/farcaster.json'
+    pathname === '/.well-known/farcaster.json' ||
+    pathname.endsWith('.png') ||
+    pathname.endsWith('.jpg') ||
+    pathname.endsWith('.jpeg') ||
+    pathname.endsWith('.gif') ||
+    pathname.endsWith('.webp') ||
+    pathname.endsWith('.svg') ||
+    pathname === '/fc.png' ||
+    pathname === '/fc.webp'
   ) {
     return NextResponse.next();
   }
