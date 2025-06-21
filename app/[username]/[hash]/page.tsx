@@ -94,6 +94,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadata.twitter!.images = [previewImage];
   }
   
+  // Add favicon references
+  metadata.icons = {
+    icon: '/fc.png',
+    apple: '/fc.png',
+  };
+  
   return metadata;
 }
 
@@ -114,7 +120,7 @@ export default async function CastPage({ params }: PageProps) {
   
   return (
     <>
-      {shouldRedirect && <ClientRedirect url={originalUrl} delay={100} />}
+      {shouldRedirect && <ClientRedirect url={originalUrl} delay={10} />}
       <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-2xl font-bold text-purple-900 mb-4">
