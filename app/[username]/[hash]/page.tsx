@@ -65,13 +65,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
+  // Track if we're using a composite image
+  let isCompositeImage = false;
+  
   // If no embedded image, handle differently based on platform
   if (!previewImage && cast?.author.pfp_url) {
-    // For Apple Messages and WhatsApp without embedded images, use profile picture
+    const displayName = cast.author.display_name || cast.author.username;
+    
+    // For Apple Messages and WhatsApp without embedded images, try composite image
     if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
-      // Use the author's profile picture directly for better compatibility
-      previewImage = cast.author.pfp_url;
-      console.log('[Metadata] Using author profile picture for Apple Messages/WhatsApp');
+      try {
+        // Create composite image with profile pic and name
+        // Add .png extension to make it look like a static image
+        const encodedPfp = encodeURIComponent(cast.author.pfp_url);
+        const encodedName = encodeURIComponent(displayName);
+        previewImage = `${baseUrl}/api/og-image.png?pfp=${encodedPfp}&name=${encodedName}`;
+        isCompositeImage = true;
+        console.log('[Metadata] Generated composite image URL:', previewImage);
+      } catch (error) {
+        console.error('[Metadata] Failed to generate composite image:', error);
+        // Fall back to profile picture
+        previewImage = cast.author.pfp_url;
+      }
     } else if (!isAppleMessages) {
       // For other platforms (not Apple Messages), use the profile picture
       previewImage = cast.author.pfp_url;
@@ -79,7 +94,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
     
     // Log for debugging
-    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}`);
+    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}`);
   }
   
   // Clean up the cast text by removing embedded URLs
@@ -139,7 +154,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     let imageHeight: number;
     let imageAlt: string;
     
-    if (hasEmbeddedImage) {
+    if (isCompositeImage) {
+      // Composite images are 320x80
+      imageWidth = 320;
+      imageHeight = 80;
+      imageAlt = `${displayName} on Farcaster`;
+    } else if (hasEmbeddedImage) {
       // Embedded images use large format
       imageWidth = 1200;
       imageHeight = 630;
