@@ -71,26 +71,26 @@ export default function Home() {
             <div className="space-y-6">
               <div>
                 <p className="text-gray-400 text-sm mb-3">Before (Farcaster link):</p>
-                <div className="relative w-full max-w-md mx-auto">
+                <div className="relative w-full max-w-md mx-auto bg-black p-4 rounded-lg">
                   <Image 
                     src="/apple_messages_farcaster.png" 
                     alt="Farcaster link preview in Apple Messages"
                     width={400}
                     height={300}
-                    className="rounded-lg border border-gray-700 w-full h-auto"
+                    className="rounded-lg w-full h-auto"
                     priority
                   />
                 </div>
               </div>
               <div>
                 <p className="text-gray-400 text-sm mb-3">After (Farlinker):</p>
-                <div className="relative w-full max-w-md mx-auto">
+                <div className="relative w-full max-w-md mx-auto bg-black p-4 rounded-lg">
                   <Image 
                     src="/apple_messages_farlinker.png" 
                     alt="Farlinker link preview in Apple Messages"
                     width={400}
                     height={300}
-                    className="rounded-lg border border-gray-700 w-full h-auto"
+                    className="rounded-lg w-full h-auto"
                     priority
                   />
                 </div>
