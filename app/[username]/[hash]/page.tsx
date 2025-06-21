@@ -114,17 +114,12 @@ export default async function CastPage({ params }: PageProps) {
   
   return (
     <>
-      {shouldRedirect && <ClientRedirect url={originalUrl} delay={1000} />}
+      {shouldRedirect && <ClientRedirect url={originalUrl} delay={100} />}
       <div className="min-h-screen bg-purple-50 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-2xl font-bold text-purple-900 mb-4">
             Farcaster Cast Preview
           </h1>
-          {shouldRedirect && (
-            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-700">Redirecting to Farcaster in a moment...</p>
-            </div>
-          )}
           {castData ? (
             <>
               <div className="mb-6">
