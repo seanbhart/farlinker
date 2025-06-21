@@ -94,10 +94,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadata.twitter!.images = [previewImage];
   }
   
-  // Add favicon references
+  // Add comprehensive favicon references
   metadata.icons = {
-    icon: '/fc.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/fc.png', type: 'image/png' }
+    ],
     apple: '/fc.png',
+    other: [
+      {
+        rel: 'icon',
+        url: '/fc.png',
+      },
+    ],
   };
   
   return metadata;

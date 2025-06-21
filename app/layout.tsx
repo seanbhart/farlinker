@@ -16,8 +16,17 @@ export const metadata: Metadata = {
   title: "Farlinker - Better Farcaster Link Previews",
   description: "Get better link previews for Farcaster posts when sharing on social media",
   icons: {
-    icon: '/fc.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/fc.png', type: 'image/png' }
+    ],
     apple: '/fc.png',
+    other: [
+      {
+        rel: 'icon',
+        url: '/fc.png',
+      },
+    ],
   },
 };
 
