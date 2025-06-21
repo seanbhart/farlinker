@@ -43,63 +43,56 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            padding: '60px',
           }}
         >
+          {/* Profile picture */}
+          {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+          <img
+            src={pfp}
+            width={180}
+            height={180}
+            style={{
+              borderRadius: '50%',
+              marginRight: '50px',
+              objectFit: 'cover',
+            }}
+          />
+          
+          {/* Text */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '40px',
+              flexDirection: 'column',
+              color: 'white',
+              justifyContent: 'center',
             }}
           >
-            {/* Profile picture */}
             <div
               style={{
-                width: 200,
-                height: 200,
-                borderRadius: '50%',
-                backgroundImage: `url(${pfp})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                flexShrink: 0,
-              }}
-            />
-            
-            {/* Text */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                color: 'white',
+                fontSize: 64,
+                fontWeight: 700,
+                lineHeight: '72px',
+                marginBottom: '8px',
               }}
             >
-              <div
-                style={{
-                  fontSize: 72,
-                  fontWeight: 700,
-                  lineHeight: '80px',
-                  marginBottom: '10px',
-                }}
-              >
-                {displayName}
-              </div>
-              <div
-                style={{
-                  fontSize: 48,
-                  color: '#9CA3AF',
-                  lineHeight: '56px',
-                }}
-              >
-                on Farcaster
-              </div>
+              {displayName}
+            </div>
+            <div
+              style={{
+                fontSize: 40,
+                color: '#9CA3AF',
+                lineHeight: '48px',
+              }}
+            >
+              on Farcaster
             </div>
           </div>
         </div>
       ),
       {
         width: 1200,
-        height: 630,
+        height: 300,
       }
     );
     

@@ -138,8 +138,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       alternateLocale: 'en',
     },
     twitter: {
-      // Use large image card only for embedded images
-      card: hasEmbeddedImage ? 'summary_large_image' : 'summary',
+      // Use large image card for embedded images and composite images
+      card: (hasEmbeddedImage || isCompositeImage) ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: `@${cast?.author.username || username}`,
@@ -155,9 +155,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     let imageAlt: string;
     
     if (isCompositeImage) {
-      // Composite images are 320x80
-      imageWidth = 320;
-      imageHeight = 80;
+      // Composite images are horizontal format
+      imageWidth = 1200;
+      imageHeight = 300;
       imageAlt = `${displayName} on Farcaster`;
     } else if (hasEmbeddedImage) {
       // Embedded images use large format
