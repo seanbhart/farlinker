@@ -22,7 +22,7 @@ export async function fetchCastByUrl(username: string, shortHash: string) {
     });
 
     return response.cast;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
