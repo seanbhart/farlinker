@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: `${baseUrl}/${username}/${hash}`,
-      siteName: 'farlinker.xyz',
+      siteName: 'Farcaster',
       type: 'article',
       locale: 'en_US',
       alternateLocale: 'en',
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       creator: `@${cast?.author.username || username}`,
-      site: '@farlinker',
+      site: '@farcaster',
     },
   };
   
