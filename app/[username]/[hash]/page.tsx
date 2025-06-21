@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Extract first image from cast embeds if available
   let previewImage: string | undefined;
+  let hasEmbeddedImage = false;
   const embedUrls: string[] = [];
   
   if (cast?.embeds && cast.embeds.length > 0) {
@@ -51,9 +52,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         // Use the first embed URL as preview image (only if it's actually an image)
         if (!previewImage) {
           previewImage = embed.url;
+          hasEmbeddedImage = true;
         }
       }
     }
+  }
+  
+  // If no embedded image, use author's profile picture
+  if (!previewImage && cast?.author.pfp_url) {
+    previewImage = cast.author.pfp_url;
   }
   
   // Clean up the cast text by removing embedded URLs
@@ -97,7 +104,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       alternateLocale: 'en',
     },
     twitter: {
-      card: previewImage ? 'summary_large_image' : 'summary',
+      // Use large image card only for embedded images, small card for profile pics
+      card: hasEmbeddedImage ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: `@${cast?.author.username || username}`,

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Home() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#17101f' }}>
@@ -62,26 +64,36 @@ export default function Home() {
             </p>
           </div>
           
-          <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 border border-gray-800 mb-8">
+          <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 border border-gray-800 mt-8">
             <h2 className="text-xl font-medium text-white mb-6">
               See the difference
             </h2>
             <div className="space-y-6">
               <div>
                 <p className="text-gray-400 text-sm mb-3">Before (Farcaster link):</p>
-                <img 
-                  src="/apple_messages_farcaster.png" 
-                  alt="Farcaster link preview in Apple Messages"
-                  className="rounded-lg border border-gray-700 w-full max-w-md mx-auto"
-                />
+                <div className="relative w-full max-w-md mx-auto">
+                  <Image 
+                    src="/apple_messages_farcaster.png" 
+                    alt="Farcaster link preview in Apple Messages"
+                    width={400}
+                    height={300}
+                    className="rounded-lg border border-gray-700 w-full h-auto"
+                    priority
+                  />
+                </div>
               </div>
               <div>
                 <p className="text-gray-400 text-sm mb-3">After (Farlinker):</p>
-                <img 
-                  src="/apple_messages_farlinker.png" 
-                  alt="Farlinker link preview in Apple Messages"
-                  className="rounded-lg border border-gray-700 w-full max-w-md mx-auto"
-                />
+                <div className="relative w-full max-w-md mx-auto">
+                  <Image 
+                    src="/apple_messages_farlinker.png" 
+                    alt="Farlinker link preview in Apple Messages"
+                    width={400}
+                    height={300}
+                    className="rounded-lg border border-gray-700 w-full h-auto"
+                    priority
+                  />
+                </div>
               </div>
             </div>
             <p className="text-gray-500 text-sm mt-6 text-center">
