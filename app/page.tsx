@@ -1,55 +1,69 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100">
+    <main className="min-h-screen" style={{ backgroundColor: '#17101f' }}>
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold text-purple-900 mb-6">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="text-4xl font-semibold text-white mb-3">
             Farlinker
           </h1>
-          <p className="text-xl text-purple-700 mb-12">
+          <p className="text-gray-400 mb-12">
             Better link previews for Farcaster posts
           </p>
           
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 mb-8 border border-gray-800">
+            <h2 className="text-xl font-medium text-white mb-6">
               How it works
             </h2>
-            <ol className="space-y-4 text-gray-700">
+            <ol className="space-y-4 text-gray-300">
               <li className="flex">
-                <span className="font-bold text-purple-600 mr-3">1.</span>
-                <span>Take any Farcaster post URL (e.g., farcaster.xyz/username/0x1234...)</span>
+                <span className="text-purple-400 mr-3 font-medium">1.</span>
+                <span>Take any Farcaster post URL</span>
               </li>
               <li className="flex">
-                <span className="font-bold text-purple-600 mr-3">2.</span>
-                <span>Replace &quot;farcaster.xyz&quot; with &quot;farlinker.xyz&quot;</span>
+                <span className="text-purple-400 mr-3 font-medium">2.</span>
+                <span>Replace "farcaster.xyz" with "farlinker.xyz"</span>
               </li>
               <li className="flex">
-                <span className="font-bold text-purple-600 mr-3">3.</span>
-                <span>Share the new link to get beautiful previews on Twitter, Discord, and more</span>
+                <span className="text-purple-400 mr-3 font-medium">3.</span>
+                <span>Share the new link to get rich previews on Twitter, Discord, Telegram, and more</span>
               </li>
               <li className="flex">
-                <span className="font-bold text-purple-600 mr-3">4.</span>
-                <span>When clicked, users are redirected to the original Farcaster post</span>
+                <span className="text-purple-400 mr-3 font-medium">4.</span>
+                <span>When clicked, users are seamlessly redirected to the original Farcaster post</span>
               </li>
             </ol>
           </div>
           
-          <div className="bg-purple-600 text-white rounded-lg p-8">
-            <h2 className="text-2xl font-semibold mb-4">
+          <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 border border-gray-800">
+            <h2 className="text-xl font-medium text-white mb-6">
               Example
             </h2>
-            <div className="space-y-2">
-              <div className="font-mono text-sm bg-purple-700 p-3 rounded">
-                <span className="text-purple-300">Original:</span> farcaster.xyz/dwr/0x0de97199
+            <div className="space-y-3">
+              <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
+                <span className="text-gray-500">Original:</span>
+                <br />
+                <span className="text-gray-300">farcaster.xyz/dwr.eth/0xba9b50bc</span>
               </div>
-              <div className="font-mono text-sm bg-purple-700 p-3 rounded">
-                <span className="text-purple-300">Farlinker:</span> farlinker.xyz/dwr/0x0de97199
+              <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
+                <span className="text-gray-500">Farlinker:</span>
+                <br />
+                <a 
+                  href="https://farlinker.xyz/dwr.eth/0xba9b50bc" 
+                  className="text-purple-400 hover:text-purple-300 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  farlinker.xyz/dwr.eth/0xba9b50bc
+                </a>
               </div>
             </div>
+            <p className="text-gray-500 text-sm mt-4">
+              Try clicking the Farlinker URL above to see it in action
+            </p>
           </div>
           
-          <div className="mt-12 text-center text-gray-600">
-            <p>Built for the Farcaster community with 💜</p>
+          <div className="mt-12 text-center text-gray-500">
+            <p>Built for the Farcaster community</p>
           </div>
         </div>
       </div>
