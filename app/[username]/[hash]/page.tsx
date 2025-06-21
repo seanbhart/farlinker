@@ -32,10 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
-  // Check if this is Apple Messages specifically
+  // Check if this is Apple Messages or WhatsApp
   const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
-  
-  // Check for other messaging platforms
   const isWhatsApp = userAgent.toLowerCase().includes('whatsapp');
   
   // Fetch cast data using Neynar SDK
@@ -67,9 +65,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
-  // If no embedded image, use author's profile picture
+  // If no embedded image, handle differently based on platform
   if (!previewImage && cast?.author.pfp_url) {
-    previewImage = cast.author.pfp_url;
+    const displayName = cast.author.display_name || cast.author.username;
+    
+    // For Apple Messages and WhatsApp without embedded images, create a composite image
+    if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
+      // Create composite image with profile pic and name
+      const encodedPfp = encodeURIComponent(cast.author.pfp_url);
+      const encodedName = encodeURIComponent(displayName);
+      previewImage = `${baseUrl}/api/og-image?pfp=${encodedPfp}&name=${encodedName}`;
+      // Treat composite images as "embedded" to use large card format
+      hasEmbeddedImage = true;
+    } else if (!isAppleMessages && !isWhatsApp) {
+      // For other platforms, just use the profile picture
+      previewImage = cast.author.pfp_url;
+    }
+    // For Apple Messages and WhatsApp with no composite fallback, no image at all
   }
   
   // Clean up the cast text by removing embedded URLs
@@ -124,22 +136,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Only add images if we have them
   if (previewImage) {
-    // For author profile pictures on certain platforms, specify smaller dimensions
-    if (!hasEmbeddedImage && (isAppleMessages || isWhatsApp)) {
-      metadata.openGraph!.images = [{
-        url: previewImage,
-        width: 200,
-        height: 200,
-        alt: displayName,
-      }];
-    } else {
-      metadata.openGraph!.images = [{
-        url: previewImage,
-        width: hasEmbeddedImage ? 1200 : 400,
-        height: hasEmbeddedImage ? 630 : 400,
-        alt: hasEmbeddedImage ? `Post by ${displayName}` : displayName,
-      }];
-    }
+    metadata.openGraph!.images = [{
+      url: previewImage,
+      width: hasEmbeddedImage ? 1200 : 400,
+      height: hasEmbeddedImage ? 630 : 400,
+      alt: hasEmbeddedImage ? `Post by ${displayName}` : displayName,
+    }];
     metadata.twitter!.images = [previewImage];
   }
   
