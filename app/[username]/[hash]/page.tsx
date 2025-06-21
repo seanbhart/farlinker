@@ -49,10 +49,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   
   // Use real cast data for metadata if available
   const authorName = cast?.author.display_name || cast?.author.username || username;
-  const title = `${authorName} on Farcaster`;
-  const description = cast?.text ? 
-    (cast.text.length > 160 ? cast.text.substring(0, 157) + '...' : cast.text) : 
+  
+  // Format like Twitter: title is the cast content, description is author/context
+  const title = cast?.text ? 
+    (cast.text.length > 70 ? cast.text.substring(0, 67) + '...' : cast.text) : 
     'View this cast on Farcaster';
+  const description = `${authorName} on Farcaster`;
   
   const metadata: Metadata = {
     title,
