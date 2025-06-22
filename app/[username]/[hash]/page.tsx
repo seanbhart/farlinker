@@ -118,6 +118,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     // For Apple Messages: put display name at beginning of title, no description
     title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
     description = '';
+  } else if (isCompositeImage) {
+    // For platforms using composite image: just the cast text, no description
+    title = cleanText || 'Loading cast content...';
+    description = '';
   } else {
     // For all other platforms: clean title, display name in description
     title = cleanText || 'Loading cast content...';

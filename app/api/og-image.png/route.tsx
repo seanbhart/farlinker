@@ -70,19 +70,19 @@ export async function GET(request: NextRequest) {
           >
             <div
               style={{
-                fontSize: 64,
+                fontSize: 80,
                 fontWeight: 700,
-                lineHeight: '72px',
-                marginBottom: '8px',
+                lineHeight: '88px',
+                marginBottom: '12px',
               }}
             >
               {displayName}
             </div>
             <div
               style={{
-                fontSize: 40,
+                fontSize: 50,
                 color: '#9CA3AF',
-                lineHeight: '48px',
+                lineHeight: '60px',
               }}
             >
               on Farcaster
