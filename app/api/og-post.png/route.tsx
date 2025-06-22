@@ -42,8 +42,7 @@ export async function GET(request: NextRequest) {
               color: 'white',
               flex: 1,
               overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
+              display: 'block',
             }}
           >
             {postText}
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              marginBottom: '25px',
+              marginTop: '20px',
             }}
           >
             {/* Profile picture */}
@@ -76,9 +75,10 @@ export async function GET(request: NextRequest) {
                 fontSize: 28,
                 fontWeight: 700,
                 color: 'white',
+                display: 'block',
               }}
             >
-              {displayName} on Farcaster
+              {`${displayName} on Farcaster`}
             </div>
           </div>
         </div>
