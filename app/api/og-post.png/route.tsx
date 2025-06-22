@@ -20,7 +20,24 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Skip URL validation for speed - let the image tag handle invalid URLs
+    // Calculate dynamic height based on text length
+    // More accurate calculation based on average character width
+    const avgCharWidth = 16; // Average character width in pixels for 28px font
+    const containerWidth = 520; // 600px - 80px padding
+    const charsPerLine = Math.floor(containerWidth / avgCharWidth);
+    const lineHeight = 40;
+    const topBottomPadding = 60; // 30px top + 30px bottom
+    const headerHeight = 80; // profile section height including margin
+    const minHeight = 315;
+    const maxHeight = 800;
+    
+    // Estimate number of lines (add extra line for word wrapping safety)
+    const estimatedLines = Math.ceil(postText.length / charsPerLine) + 1;
+    const textHeight = estimatedLines * lineHeight;
+    const calculatedHeight = topBottomPadding + textHeight + headerHeight;
+    
+    // Use calculated height with min/max constraints
+    const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
 
     const response = new ImageResponse(
       (
@@ -86,7 +103,7 @@ export async function GET(request: NextRequest) {
       ),
       {
         width: 600,
-        height: 315,
+        height: dynamicHeight,
       }
     );
     

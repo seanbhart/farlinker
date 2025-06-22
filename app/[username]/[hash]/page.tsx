@@ -96,7 +96,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         const encodedPfp = encodeURIComponent(cast.author.pfp_url);
         const encodedName = encodeURIComponent(displayName);
         const encodedText = encodeURIComponent(cleanText);
-        previewImage = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}`;
+        const encodedUsername = encodeURIComponent(cast.author.username);
+        previewImage = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}&username=${encodedUsername}`;
         isCompositeImage = true;
         isPostPreview = true;
         hasEmbeddedImage = false; // Use smaller dimensions
@@ -105,9 +106,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         console.error('[Metadata] Failed to generate post preview image:', error);
       }
     }
-    
-    // For Apple Messages and WhatsApp without embedded images, try composite image
-    if (!previewImage && (isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
+    // For Apple Messages and WhatsApp without embedded images, use simple composite image
+    else if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
       try {
         // Create composite image with profile pic and name
         // Add .png extension to make it look like a static image
@@ -182,13 +182,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (previewImage) {
     // Determine appropriate dimensions based on image type
     let imageWidth: number;
-    let imageHeight: number;
+    let imageHeight: number | undefined;
     let imageAlt: string;
     
     if (isPostPreview) {
-      // Post preview images are smaller resolution
+      // Post preview images have dynamic height, only set width
       imageWidth = 600;
-      imageHeight = 315;
+      // Don't set height for dynamic images
+      imageHeight = undefined;
       imageAlt = `${displayName} on Farcaster`;
     } else if (isCompositeImage) {
       // Composite images are horizontal format
@@ -207,12 +208,18 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       imageAlt = displayName;
     }
     
-    metadata.openGraph!.images = [{
+    const imageData: any = {
       url: previewImage,
       width: imageWidth,
-      height: imageHeight,
       alt: imageAlt,
-    }];
+    };
+    
+    // Only add height if it's defined (not for dynamic height images)
+    if (imageHeight !== undefined) {
+      imageData.height = imageHeight;
+    }
+    
+    metadata.openGraph!.images = [imageData];
     metadata.twitter!.images = [previewImage];
   }
   
