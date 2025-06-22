@@ -22,11 +22,16 @@ interface PageProps {
     username: string;
     hash: string;
   }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // Generate dynamic metadata for Open Graph and Farcaster Frame
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { username, hash } = await params;
+  const urlParams = await searchParams;
+  
+  // Check if preview parameter is present
+  const forcePreview = urlParams.preview === 'true' || urlParams.preview === '1';
   
   // Get headers to check user agent
   const headersList = await headers();
@@ -65,6 +70,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   
+  // Clean up the cast text by removing embedded URLs first
+  let cleanText = cast?.text || '';
+  if (cast && embedUrls.length > 0) {
+    // Remove any URLs that match embeds to avoid duplication
+    embedUrls.forEach(url => {
+      cleanText = cleanText.replace(url, '').trim();
+    });
+    // Clean up any extra whitespace
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+  }
+  
   // Track if we're using a composite image
   let isCompositeImage = false;
   
@@ -72,8 +88,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!previewImage && cast?.author.pfp_url) {
     const displayName = cast.author.display_name || cast.author.username;
     
+    // Check if we should force the preview format with post text
+    if (forcePreview && cleanText) {
+      try {
+        // Create composite image with user header and post text
+        const encodedPfp = encodeURIComponent(cast.author.pfp_url);
+        const encodedName = encodeURIComponent(displayName);
+        const encodedText = encodeURIComponent(cleanText);
+        previewImage = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}`;
+        isCompositeImage = true;
+        hasEmbeddedImage = true; // Treat as embedded to use large card format
+        console.log('[Metadata] Generated post preview image URL (forced):', previewImage);
+      } catch (error) {
+        console.error('[Metadata] Failed to generate post preview image:', error);
+      }
+    }
+    
     // For Apple Messages and WhatsApp without embedded images, try composite image
-    if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
+    if (!previewImage && (isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
       try {
         // Create composite image with profile pic and name
         // Add .png extension to make it look like a static image
@@ -94,18 +126,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
     
     // Log for debugging
-    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}`);
-  }
-  
-  // Clean up the cast text by removing embedded URLs
-  let cleanText = cast?.text || '';
-  if (cast && embedUrls.length > 0) {
-    // Remove any URLs that match embeds to avoid duplication
-    embedUrls.forEach(url => {
-      cleanText = cleanText.replace(url, '').trim();
-    });
-    // Clean up any extra whitespace
-    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}, ForcePreview: ${forcePreview}`);
   }
   
   // Set metadata according to requirements based on platform
