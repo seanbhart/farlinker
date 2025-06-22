@@ -87,16 +87,34 @@ export async function GET(request: NextRequest) {
               }}
             />
             
-            {/* Username */}
+            {/* Username and site */}
             <div
               style={{
-                fontSize: 28,
-                fontWeight: 700,
-                color: 'white',
-                display: 'block',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
               }}
             >
-              {`${displayName} (@${username})`}
+              <div
+                style={{
+                  fontSize: 28,
+                  fontWeight: 700,
+                  color: 'white',
+                  display: 'block',
+                }}
+              >
+                {`${displayName} (@${username})`}
+              </div>
+              <div
+                style={{
+                  fontSize: 20,
+                  fontWeight: 400,
+                  color: '#999',
+                  display: 'block',
+                }}
+              >
+                farcaster.xyz
+              </div>
             </div>
           </div>
         </div>

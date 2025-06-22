@@ -163,7 +163,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       title,
       description,
       url: `${baseUrl}/${username}/${hash}`,
-      siteName: 'Farcaster',
+      siteName: forcePreview ? '' : 'Farcaster',
       type: 'article',
       locale: 'en_US',
       alternateLocale: 'en',
