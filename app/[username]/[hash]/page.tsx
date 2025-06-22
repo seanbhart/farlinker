@@ -208,7 +208,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       imageAlt = displayName;
     }
     
-    const imageData: any = {
+    interface ImageData {
+      url: string;
+      width: number;
+      alt: string;
+      height?: number;
+    }
+    
+    const imageData: ImageData = {
       url: previewImage,
       width: imageWidth,
       alt: imageAlt,
