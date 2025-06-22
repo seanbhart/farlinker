@@ -83,6 +83,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   
   // Track if we're using a composite image
   let isCompositeImage = false;
+  let isPostPreview = false;
   
   // If no embedded image, handle differently based on platform
   if (!previewImage && cast?.author.pfp_url) {
@@ -97,7 +98,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         const encodedText = encodeURIComponent(cleanText);
         previewImage = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}`;
         isCompositeImage = true;
-        hasEmbeddedImage = true; // Treat as embedded to use large card format
+        isPostPreview = true;
+        hasEmbeddedImage = false; // Use smaller dimensions
         console.log('[Metadata] Generated post preview image URL (forced):', previewImage);
       } catch (error) {
         console.error('[Metadata] Failed to generate post preview image:', error);
@@ -179,7 +181,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     let imageHeight: number;
     let imageAlt: string;
     
-    if (isCompositeImage) {
+    if (isPostPreview) {
+      // Post preview images are smaller resolution
+      imageWidth = 600;
+      imageHeight = 315;
+      imageAlt = `${displayName} on Farcaster`;
+    } else if (isCompositeImage) {
       // Composite images are horizontal format
       imageWidth = 1200;
       imageHeight = 300;

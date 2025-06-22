@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            padding: '60px 80px',
+            padding: '30px 40px',
           }}
         >
           {/* User header */}
@@ -52,18 +52,18 @@ export async function GET(request: NextRequest) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              marginBottom: '40px',
+              marginBottom: '25px',
             }}
           >
             {/* Profile picture */}
             {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
             <img
               src={pfp}
-              width={64}
-              height={64}
+              width={48}
+              height={48}
               style={{
                 borderRadius: '50%',
-                marginRight: '20px',
+                marginRight: '15px',
                 objectFit: 'cover',
               }}
             />
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
             {/* Username */}
             <div
               style={{
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: 600,
                 color: 'white',
               }}
@@ -83,14 +83,14 @@ export async function GET(request: NextRequest) {
           {/* Post text */}
           <div
             style={{
-              fontSize: 42,
-              lineHeight: '56px',
+              fontSize: 36,
+              lineHeight: '48px',
+              fontWeight: 400,
               color: 'white',
               flex: 1,
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              maxWidth: '1000px',
             }}
           >
             {postText}
@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
         </div>
       ),
       {
-        width: 1200,
-        height: 630,
+        width: 600,
+        height: 315,
       }
     );
     
