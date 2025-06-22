@@ -9,8 +9,9 @@ export async function GET(request: NextRequest) {
     const pfp = searchParams.get('pfp');
     const displayName = searchParams.get('name');
     const postText = searchParams.get('text');
+    const username = searchParams.get('username');
     
-    if (!pfp || !displayName || !postText) {
+    if (!pfp || !displayName || !postText || !username) {
       return new Response('Missing parameters', { 
         status: 400,
         headers: {
@@ -46,6 +47,40 @@ export async function GET(request: NextRequest) {
             }}
           >
             {postText}
+          </div>
+
+          {/* User header */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '20px',
+            }}
+          >
+            {/* Profile picture */}
+            {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+            <img
+              src={pfp}
+              width={60}
+              height={60}
+              style={{
+                borderRadius: '50%',
+                marginRight: '15px',
+                objectFit: 'cover',
+              }}
+            />
+            
+            {/* Username */}
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: 700,
+                color: 'white',
+                display: 'block',
+              }}
+            >
+              {`${displayName} (@${username})`}
+            </div>
           </div>
         </div>
       ),
