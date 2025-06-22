@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
           {/* Post text */}
           <div
             style={{
-              fontSize: 27,
-              lineHeight: '39px',
+              fontSize: 28,
+              lineHeight: '40px',
               fontWeight: 400,
               color: 'white',
               flex: 1,
@@ -46,40 +46,6 @@ export async function GET(request: NextRequest) {
             }}
           >
             {postText}
-          </div>
-
-          {/* User header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginTop: '20px',
-            }}
-          >
-            {/* Profile picture */}
-            {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
-            <img
-              src={pfp}
-              width={48}
-              height={48}
-              style={{
-                borderRadius: '50%',
-                marginRight: '15px',
-                objectFit: 'cover',
-              }}
-            />
-            
-            {/* Username */}
-            <div
-              style={{
-                fontSize: 28,
-                fontWeight: 700,
-                color: 'white',
-                display: 'block',
-              }}
-            >
-              {`${displayName} on Farcaster`}
-            </div>
           </div>
         </div>
       ),
