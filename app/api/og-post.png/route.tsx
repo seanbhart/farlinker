@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            padding: '40px',
+            padding: '60px 80px',
           }}
         >
           {/* User header */}
@@ -52,15 +52,15 @@ export async function GET(request: NextRequest) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              marginBottom: '30px',
+              marginBottom: '40px',
             }}
           >
             {/* Profile picture */}
             {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
             <img
               src={pfp}
-              width={80}
-              height={80}
+              width={64}
+              height={64}
               style={{
                 borderRadius: '50%',
                 marginRight: '20px',
@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
             {/* Username */}
             <div
               style={{
-                fontSize: 36,
-                fontWeight: 700,
+                fontSize: 32,
+                fontWeight: 600,
                 color: 'white',
               }}
             >
@@ -83,13 +83,14 @@ export async function GET(request: NextRequest) {
           {/* Post text */}
           <div
             style={{
-              fontSize: 28,
-              lineHeight: '38px',
+              fontSize: 42,
+              lineHeight: '56px',
               color: 'white',
               flex: 1,
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
+              maxWidth: '1000px',
             }}
           >
             {postText}
