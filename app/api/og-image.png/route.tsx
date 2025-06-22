@@ -9,24 +9,8 @@ export async function GET(request: NextRequest) {
     const pfp = searchParams.get('pfp');
     const displayName = searchParams.get('name');
     
-    console.log('[OG Image] Generating image for:', { pfp, displayName });
-    
     if (!pfp || !displayName) {
-      console.error('[OG Image] Missing parameters');
       return new Response('Missing parameters', { 
-        status: 400,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      });
-    }
-
-    // Validate the profile picture URL
-    try {
-      new URL(pfp);
-    } catch {
-      console.error('[OG Image] Invalid profile picture URL:', pfp);
-      return new Response('Invalid profile picture URL', { 
         status: 400,
         headers: {
           'Content-Type': 'text/plain',
@@ -96,13 +80,12 @@ export async function GET(request: NextRequest) {
       }
     );
     
-    // Add cache headers to the response
-    response.headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
+    // Add aggressive cache headers for faster loading
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    response.headers.set('X-Robots-Tag', 'noindex');
     
-    console.log('[OG Image] Successfully generated image');
     return response;
-  } catch (error) {
-    console.error('OG Image generation failed:', error);
+  } catch {
     return new Response('Failed to generate image', { 
       status: 500,
       headers: {

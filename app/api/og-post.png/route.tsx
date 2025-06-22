@@ -10,10 +10,7 @@ export async function GET(request: NextRequest) {
     const displayName = searchParams.get('name');
     const postText = searchParams.get('text');
     
-    console.log('[OG Post Image] Generating image for:', { pfp, displayName, postText });
-    
     if (!pfp || !displayName || !postText) {
-      console.error('[OG Post Image] Missing parameters');
       return new Response('Missing parameters', { 
         status: 400,
         headers: {
@@ -22,18 +19,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Validate the profile picture URL
-    try {
-      new URL(pfp);
-    } catch {
-      console.error('[OG Post Image] Invalid profile picture URL:', pfp);
-      return new Response('Invalid profile picture URL', { 
-        status: 400,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      });
-    }
+    // Skip URL validation for speed - let the image tag handle invalid URLs
 
     const response = new ImageResponse(
       (
@@ -71,7 +57,7 @@ export async function GET(request: NextRequest) {
             {/* Username */}
             <div
               style={{
-                fontSize: 32,
+                fontSize: 26,
                 fontWeight: 700,
                 color: 'white',
               }}
@@ -83,8 +69,8 @@ export async function GET(request: NextRequest) {
           {/* Post text */}
           <div
             style={{
-              fontSize: 32,
-              lineHeight: '44px',
+              fontSize: 26,
+              lineHeight: '38px',
               fontWeight: 400,
               color: 'white',
               flex: 1,
@@ -103,13 +89,12 @@ export async function GET(request: NextRequest) {
       }
     );
     
-    // Add cache headers to the response
-    response.headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
+    // Add aggressive cache headers for faster loading
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    response.headers.set('X-Robots-Tag', 'noindex');
     
-    console.log('[OG Post Image] Successfully generated image');
     return response;
-  } catch (error) {
-    console.error('OG Post Image generation failed:', error);
+  } catch {
     return new Response('Failed to generate image', { 
       status: 500,
       headers: {
