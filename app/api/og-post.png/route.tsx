@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
             {/* Username */}
             <div
               style={{
-                fontSize: 28,
-                fontWeight: 600,
+                fontSize: 32,
+                fontWeight: 700,
                 color: 'white',
               }}
             >
@@ -83,8 +83,8 @@ export async function GET(request: NextRequest) {
           {/* Post text */}
           <div
             style={{
-              fontSize: 36,
-              lineHeight: '48px',
+              fontSize: 32,
+              lineHeight: '44px',
               fontWeight: 400,
               color: 'white',
               flex: 1,
