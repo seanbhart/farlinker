@@ -33,6 +33,22 @@ export async function GET(request: NextRequest) {
             padding: '30px 40px',
           }}
         >
+          {/* Post text */}
+          <div
+            style={{
+              fontSize: 27,
+              lineHeight: '39px',
+              fontWeight: 400,
+              color: 'white',
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {postText}
+          </div>
+
           {/* User header */}
           <div
             style={{
@@ -57,29 +73,13 @@ export async function GET(request: NextRequest) {
             {/* Username */}
             <div
               style={{
-                fontSize: 26,
+                fontSize: 28,
                 fontWeight: 700,
                 color: 'white',
               }}
             >
-              {displayName}
+              {displayName} on Farcaster
             </div>
-          </div>
-          
-          {/* Post text */}
-          <div
-            style={{
-              fontSize: 26,
-              lineHeight: '38px',
-              fontWeight: 400,
-              color: 'white',
-              flex: 1,
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            {postText}
           </div>
         </div>
       ),

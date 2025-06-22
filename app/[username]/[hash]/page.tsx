@@ -139,7 +139,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   
   if (forcePreview) {
     // When using preview=true, no title or description (everything is in the image)
-    title = '';
+    title = cast ? `${displayName} on Farcaster` : 'Loading cast content...';
     description = '';
   } else if (isAppleMessages) {
     // For Apple Messages: put display name at beginning of title, no description
