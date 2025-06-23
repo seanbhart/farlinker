@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Return message with the link
     return NextResponse.json({
       type: 'message',
-      message: isStandard ? '📄 Standard link copied!' : '📋 Enhanced link copied!',
+      message: isStandard ? 'Standard link copied!' : 'Enhanced link copied!',
       link: farlinkerUrl
     });
   } catch (error) {

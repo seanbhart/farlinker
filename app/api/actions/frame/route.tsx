@@ -3,7 +3,12 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Get the host for absolute image URLs
+  const host = request.headers.get('host') || 'www.farlinker.xyz';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  
   return new ImageResponse(
     (
       <div
@@ -16,57 +21,128 @@ export async function GET() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'sans-serif',
+          padding: '40px',
         }}
       >
         <div
           style={{
-            fontSize: 48,
+            fontSize: 40,
             fontWeight: 'bold',
             color: '#fff',
             marginBottom: 20,
           }}
         >
-          Farlinker
-        </div>
-        <div
-          style={{
-            fontSize: 24,
-            color: '#9ca3af',
-            marginBottom: 40,
-            textAlign: 'center',
-          }}
-        >
           Choose your link format
         </div>
+        
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            gap: 20,
+            gap: 40,
             alignItems: 'center',
+            marginBottom: 20,
           }}
         >
+          {/* Enhanced Preview Example */}
           <div
             style={{
-              background: '#8b5cf6',
-              color: '#fff',
-              padding: '12px 24px',
-              borderRadius: 8,
-              fontSize: 18,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 10,
             }}
           >
-            Enhanced Preview (with images)
+            <div
+              style={{
+                width: 400,
+                height: 240,
+                background: '#000',
+                borderRadius: 12,
+                overflow: 'hidden',
+                border: '2px solid #2d2b35',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <img 
+                src={`${baseUrl}/apple_messages_farlinker.png`}
+                width={400}
+                height={240}
+                style={{
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                fontSize: 16,
+                color: '#9ca3af',
+                textAlign: 'center',
+              }}
+            >
+              Enhanced Preview
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                color: '#6b7280',
+                textAlign: 'center',
+              }}
+            >
+              Similar to Twitter previews
+            </div>
           </div>
+          
+          {/* Standard Preview Example */}
           <div
             style={{
-              background: '#6366f1',
-              color: '#fff',
-              padding: '12px 24px',
-              borderRadius: 8,
-              fontSize: 18,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 10,
             }}
           >
-            Standard Preview (text only)
+            <div
+              style={{
+                width: 400,
+                height: 240,
+                background: '#000',
+                borderRadius: 12,
+                overflow: 'hidden',
+                border: '2px solid #2d2b35',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <img 
+                src={`${baseUrl}/apple_messages_farlinker_standard.png`}
+                width={400}
+                height={240}
+                style={{
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                fontSize: 16,
+                color: '#9ca3af',
+                textAlign: 'center',
+              }}
+            >
+              Standard Preview
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                color: '#6b7280',
+                textAlign: 'center',
+              }}
+            >
+              Similar to website previews
+            </div>
           </div>
         </div>
       </div>
@@ -99,8 +175,8 @@ export async function POST(request: NextRequest) {
 <head>
   <meta property="fc:frame" content="vNext" />
   <meta property="fc:frame:image" content="${baseUrl}/api/actions/frame?castId=${castId}&fid=${fid}" />
-  <meta property="fc:frame:button:1" content="📋 Copy Enhanced Link" />
-  <meta property="fc:frame:button:2" content="📄 Copy Standard Link" />
+  <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
+  <meta property="fc:frame:button:2" content="Copy Standard Link" />
   <meta property="fc:frame:post_url" content="${baseUrl}/api/actions/process?castId=${castId}&fid=${fid}" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
   <meta property="og:image" content="${baseUrl}/api/actions/frame?castId=${castId}&fid=${fid}" />
