@@ -42,10 +42,10 @@ export async function GET() {
     name: 'Farlinker',
     icon: 'link-external',
     description: 'create enhanced link previews',
-    aboutUrl: 'https://farlinker.xyz',
+    aboutUrl: 'https://www.farlinker.xyz',
     action: {
       type: 'post',
-      postUrl: 'https://farlinker.xyz/api/actions/farlinker'
+      postUrl: 'https://www.farlinker.xyz/api/actions/farlinker'
     }
   });
 }
