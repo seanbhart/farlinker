@@ -30,9 +30,10 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const { username, hash } = await params;
   const urlParams = await searchParams;
   
-  // Check if we should use the simple format (backup option)
+  // Check preview parameters
   const useSimpleFormat = urlParams.simple === 'true' || urlParams.simple === '1';
-  console.log('[Metadata] URL params:', urlParams, 'Use simple format:', useSimpleFormat);
+  const useStandardPreview = urlParams.preview === 'standard';
+  console.log('[Metadata] URL params:', urlParams, 'Use simple format:', useSimpleFormat, 'Use standard preview:', useStandardPreview);
   
   // Get headers to check user agent
   const headersList = await headers();
@@ -107,8 +108,15 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let isPostPreview = false;
   let shouldUseSimple = useSimpleFormat;
   
+  // If using standard preview, skip composite image generation
+  if (useStandardPreview) {
+    // Use the embedded image if available, otherwise use profile picture
+    if (!previewImage && cast?.author.pfp_url) {
+      previewImage = cast.author.pfp_url;
+    }
+  }
   // If no embedded image OR we're creating a composite, handle differently based on platform
-  if ((!previewImage || !shouldUseSimple) && cast?.author.pfp_url) {
+  else if ((!previewImage || !shouldUseSimple) && cast?.author.pfp_url) {
     const displayName = cast.author.display_name || cast.author.username;
     
     // Default behavior: use composite image with post text
@@ -182,7 +190,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let title: string;
   let description: string;
   
-  if (isPostPreview && !isWhatsApp) {
+  if (useStandardPreview) {
+    // Standard preview: title is post text, description is "username on Farcaster"
+    title = cast ? cleanText || 'Farcaster' : 'Loading cast content...';
+    description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
+  } else if (isPostPreview && !isWhatsApp) {
     // When using composite post preview, no title or description (everything is in the image)
     // Exception: WhatsApp needs title/description to show preview
     title = '';
@@ -213,7 +225,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       title,
       description,
       url: `${baseUrl}/${username}/${hash}`,
-      siteName: isPostPreview ? '' : 'Farcaster',
+      siteName: (isPostPreview && !useStandardPreview) ? '' : 'Farcaster',
       type: 'article',
       locale: 'en_US',
       alternateLocale: 'en',
@@ -235,7 +247,19 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     let imageHeight: number | undefined;
     let imageAlt: string;
     
-    if (isPostPreview) {
+    if (useStandardPreview) {
+      // Standard preview uses appropriate dimensions based on image type
+      if (hasEmbeddedImage) {
+        imageWidth = 1200;
+        imageHeight = 630;
+        imageAlt = `Post by ${displayName}`;
+      } else {
+        // Profile picture
+        imageWidth = 400;
+        imageHeight = 400;
+        imageAlt = displayName;
+      }
+    } else if (isPostPreview) {
       // Post preview images have dynamic height, only set width
       imageWidth = 600;
       // Don't set height for dynamic images
