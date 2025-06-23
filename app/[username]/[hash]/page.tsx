@@ -193,17 +193,23 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let description: string;
   
   if (useStandardPreview || isWhatsApp || isTelegram || isFacebook || isLinkedIn) {
-    // Standard preview: title is post text, description is "username on Farcaster"
-    title = cast ? cleanText || 'Farcaster' : 'Loading cast content...';
-    description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
+    if (isAppleMessages) {
+      // Apple Messages with standard preview still gets special title format
+      title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
+      description = '';
+    } else {
+      // Other platforms get standard format
+      title = cast ? cleanText || 'Farcaster' : 'Loading cast content...';
+      description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
+    }
+  } else if (isAppleMessages) {
+    // Apple Messages without standard preview: special format
+    title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
+    description = '';
   } else if (isPostPreview) {
     // When using composite post preview, no title or description (everything is in the image)
     // Exception: WhatsApp needs title/description to show preview
     title = '';
-    description = '';
-  } else if (isAppleMessages) {
-    // For Apple Messages: put display name at beginning of title, no description
-    title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
     description = '';
   } else if (isCompositeImage) {
     // For platforms using composite image: just the cast text, no description
