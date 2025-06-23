@@ -162,12 +162,14 @@ export async function GET(request: NextRequest) {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              padding: embeddedImage ? '25px 40px 25px 40px' : '0',
+              padding: embeddedImage 
+                ? (text && text.trim() ? '25px 40px 25px 40px' : '15px 40px 25px 40px')
+                : '0',
               flex: 1,
             }}
           >
-            {/* Post text */}
-            {(text || platform === 'messaging') && (
+            {/* Post text - only render if there's actual text */}
+            {text && text.trim() && (
               <div
                 style={{
                   fontSize: 32,
@@ -178,7 +180,6 @@ export async function GET(request: NextRequest) {
                   marginBottom: 'auto',
                   wordBreak: 'break-word',
                   whiteSpace: 'pre-wrap',
-                  minHeight: platform === 'messaging' ? '42px' : undefined,
                 }}
               >
                 {text}
