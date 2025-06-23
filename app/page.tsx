@@ -1,9 +1,17 @@
 'use client';
 
 import Image from 'next/image';
+import { track } from '@vercel/analytics';
 
 export default function Home() {
-  const shareViaMessages = (url: string) => {
+  const shareViaMessages = (url: string, format: 'enhanced' | 'standard') => {
+    // Track the share action
+    track('share_button_clicked', {
+      format,
+      url,
+      method: navigator.share ? 'native_share' : 'clipboard'
+    });
+
     // Use native share API if available (mobile)
     if (navigator.share) {
       navigator.share({
@@ -73,7 +81,7 @@ export default function Home() {
                     <span className="text-gray-300 break-all">farlinker.xyz/dwr.eth/0xce8c7b65</span>
                   </div>
                   <button
-                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65')}
+                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65', 'enhanced')}
                     className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
                   >
                     Share
@@ -88,7 +96,7 @@ export default function Home() {
                     <span className="text-gray-300 break-all">farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard</span>
                   </div>
                   <button
-                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard')}
+                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard', 'standard')}
                     className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
                   >
                     Share

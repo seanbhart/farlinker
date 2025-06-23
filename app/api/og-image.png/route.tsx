@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { track } from '@vercel/analytics/server';
 
 export const runtime = 'edge';
 
@@ -17,6 +18,13 @@ export async function GET(request: NextRequest) {
         },
       });
     }
+    
+    // Track OG image generation
+    await track('og_image_generated', {
+      type: 'simple',
+      hasProfile: !!pfp,
+      hasName: !!displayName
+    });
 
     const response = new ImageResponse(
       (

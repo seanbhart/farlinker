@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { fetchCastByUrl } from '@/lib/neynar-client';
 import { ClientRedirect } from './client-redirect';
+import { track } from '@vercel/analytics/server';
 
 interface CastWithReactions {
   author: {
@@ -326,8 +327,9 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   return metadata;
 }
 
-export default async function CastPage({ params }: PageProps) {
+export default async function CastPage({ params, searchParams }: PageProps) {
   const { username, hash } = await params;
+  const urlParams = await searchParams;
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
@@ -337,6 +339,16 @@ export default async function CastPage({ params }: PageProps) {
   // Prepare the redirect URL for non-bot users
   const originalUrl = `https://farcaster.xyz/${username}/${hash}`;
   const shouldRedirect = !isBot;
+  
+  // Track the link visit
+  if (!isBot) {
+    await track('farlinker_link_visited', {
+      username,
+      hash,
+      format: urlParams.preview === 'standard' ? 'standard' : 'enhanced',
+      userAgent: userAgent.substring(0, 100) // Truncate user agent for analytics
+    });
+  }
   
   // Fetch cast data for display
   const castData = await fetchCastByUrl(username, hash) as CastWithReactions | null;

@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { track } from '@vercel/analytics/server';
 
 export const runtime = 'edge';
 
@@ -24,6 +25,15 @@ export async function GET(request: NextRequest) {
     
     // Handle empty text
     const text = postText || '';
+    
+    // Track OG post image generation
+    await track('og_image_generated', {
+      type: 'post',
+      hasProfile: !!pfp,
+      hasText: !!postText,
+      hasEmbeddedImage: !!embeddedImage,
+      platform: platform || 'default'
+    });
     
     // Calculate embedded image height if present
     let embeddedImageHeight = 0;
