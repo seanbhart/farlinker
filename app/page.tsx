@@ -120,7 +120,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-3">After (Farlinker):</p>
+                <p className="text-gray-400 text-sm mb-3">After (Farlinker format):</p>
                 <div className="relative w-full max-w-md mx-auto bg-black p-4 rounded-lg">
                   <Image 
                     src="/apple_messages_farlinker.png" 
