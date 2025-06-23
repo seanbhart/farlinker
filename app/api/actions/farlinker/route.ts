@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
     });
     
     // Get the host from headers for local testing
-    const host = request.headers.get('host') || 'farlinker.xyz';
+    const host = request.headers.get('host') || 'www.farlinker.xyz';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     
-    // Return frame response (actions spec only supports message/frame/error types)
-    const frameUrl = `${protocol}://${host}/actions/modal?castId=${castId.hash}&fid=${castId.fid}`;
+    // Return frame response that will show our modal
+    const frameUrl = `${protocol}://${host}/api/actions/frame?castId=${castId.hash}&fid=${castId.fid}`;
     console.log('[Farlinker Action] Returning frame URL:', frameUrl);
     
     return NextResponse.json({
@@ -41,7 +41,7 @@ export async function GET() {
   return NextResponse.json({
     name: 'Farlinker',
     icon: 'link-external',
-    description: 'create enhanced link previews',
+    description: 'Copy preview link',
     aboutUrl: 'https://www.farlinker.xyz',
     action: {
       type: 'post',
