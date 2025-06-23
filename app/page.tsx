@@ -66,30 +66,30 @@ export default function Home() {
                 <span className="text-gray-300">farcaster.xyz/dwr.eth/0xce8c7b65</span>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex-1">
                     <span className="text-gray-500">Farlinker format:</span>
                     <br />
-                    <span className="text-gray-300">farlinker.xyz/dwr.eth/0xce8c7b65</span>
+                    <span className="text-gray-300 break-all">farlinker.xyz/dwr.eth/0xce8c7b65</span>
                   </div>
                   <button
                     onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65')}
-                    className="ml-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
                   >
                     Share
                   </button>
                 </div>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex-1">
                     <span className="text-gray-500">Farlinker standard open graph format:</span>
                     <br />
-                    <span className="text-gray-300">farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard</span>
+                    <span className="text-gray-300 break-all">farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard</span>
                   </div>
                   <button
                     onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard')}
-                    className="ml-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
                   >
                     Share
                   </button>
