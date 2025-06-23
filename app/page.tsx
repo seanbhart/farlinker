@@ -44,30 +44,30 @@ export default function Home() {
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
                 <span className="text-gray-500">Original:</span>
                 <br />
-                <span className="text-gray-300">farcaster.xyz/dwr.eth/0xba9b50bc</span>
+                <span className="text-gray-300">farcaster.xyz/dwr.eth/0xce8c7b65</span>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
                 <span className="text-gray-500">Farlinker format:</span>
                 <br />
                 <a 
-                  href="https://farlinker.xyz/dwr.eth/0xba9b50bc" 
+                  href="https://farlinker.xyz/dwr.eth/0xce8c7b65" 
                   className="text-purple-400 hover:text-purple-300 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  farlinker.xyz/dwr.eth/0xba9b50bc
+                  farlinker.xyz/dwr.eth/0xce8c7b65
                 </a>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
                 <span className="text-gray-500">Farlinker standard open graph format:</span>
                 <br />
                 <a 
-                  href="https://farlinker.xyz/dwr.eth/0xba9b50bc?preview=standard" 
+                  href="https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard" 
                   className="text-purple-400 hover:text-purple-300 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  farlinker.xyz/dwr.eth/0xba9b50bc?preview=standard
+                  farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard
                 </a>
               </div>
             </div>
