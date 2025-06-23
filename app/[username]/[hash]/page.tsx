@@ -203,8 +203,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
     }
   } else if (isAppleMessages) {
-    // Apple Messages without standard preview: special format
-    title = cast ? `${displayName} on Farcaster\n\n${cleanText}` : 'Loading cast content...';
+    // Apple Messages without standard preview: use composite image, no title/description
+    title = '';
     description = '';
   } else if (isPostPreview) {
     // When using composite post preview, no title or description (everything is in the image)
