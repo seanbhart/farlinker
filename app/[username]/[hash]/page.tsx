@@ -39,8 +39,10 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const userAgent = headersList.get('user-agent') || '';
   
   // Check if this is Apple Messages or WhatsApp
-  const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages pattern
-  const isWhatsApp = userAgent.toLowerCase().includes('whatsapp');
+  const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages specific pattern
+  const isWhatsApp = userAgent.toLowerCase().includes('whatsapp') || 
+                     userAgent.includes('WhatsApp') ||
+                     (userAgent.includes('facebookexternalhit/1.1') && !userAgent.includes('Twitterbot'));
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
@@ -157,9 +159,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let title: string;
   let description: string;
   
-  if (isPostPreview) {
+  if (isPostPreview && !isWhatsApp) {
     // When using composite post preview, no title or description (everything is in the image)
+    // Exception: WhatsApp needs title/description to show preview
     title = '';
+    description = '';
+  } else if (isWhatsApp) {
+    // WhatsApp needs a title to show preview
+    title = cast ? cleanText || `${displayName} on Farcaster` : 'Farcaster';
     description = '';
   } else if (isAppleMessages) {
     // For Apple Messages: put display name at beginning of title, no description
