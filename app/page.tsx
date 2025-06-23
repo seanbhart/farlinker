@@ -47,7 +47,7 @@ export default function Home() {
                 <span className="text-gray-300">farcaster.xyz/dwr.eth/0xba9b50bc</span>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
-                <span className="text-gray-500">Farlinker:</span>
+                <span className="text-gray-500">Farlinker format:</span>
                 <br />
                 <a 
                   href="https://farlinker.xyz/dwr.eth/0xba9b50bc" 
@@ -58,9 +58,21 @@ export default function Home() {
                   farlinker.xyz/dwr.eth/0xba9b50bc
                 </a>
               </div>
+              <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
+                <span className="text-gray-500">Farlinker standard open graph format:</span>
+                <br />
+                <a 
+                  href="https://farlinker.xyz/dwr.eth/0xba9b50bc?preview=standard" 
+                  className="text-purple-400 hover:text-purple-300 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  farlinker.xyz/dwr.eth/0xba9b50bc?preview=standard
+                </a>
+              </div>
             </div>
             <p className="text-gray-500 text-sm mt-4">
-              Try clicking the Farlinker URL above to see it in action
+              Try clicking the Farlinker URLs above to see them in action. The standard format provides a cleaner, text-focused preview.
             </p>
           </div>
           
@@ -95,10 +107,20 @@ export default function Home() {
                   />
                 </div>
               </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-3">Standard preview (with ?preview=standard):</p>
+                <div className="relative w-full max-w-md mx-auto bg-black p-4 rounded-lg">
+                  <Image 
+                    src="/apple_messages_farlinker_standard.png" 
+                    alt="Farlinker standard preview in Apple Messages"
+                    width={400}
+                    height={300}
+                    className="rounded-lg w-full h-auto"
+                    priority
+                  />
+                </div>
+              </div>
             </div>
-            <p className="text-gray-500 text-sm mt-6 text-center">
-              Farlinker provides rich previews with full cast content, author info, and embedded images
-            </p>
           </div>
           
           <div className="mt-12 text-center text-gray-500">
