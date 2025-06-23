@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       embeddedImageHeight = Math.round(600 * aspectRatio);
       
       // Cap maximum height to prevent extremely tall images
-      embeddedImageHeight = Math.min(embeddedImageHeight, 800);
+      embeddedImageHeight = Math.min(embeddedImageHeight, 1200);
       
       console.log(`[OG-Post] Embedded image - Aspect ratio: ${aspectRatio}, Height: ${embeddedImageHeight}px`);
     }
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     const headerHeight = 60; // profile section height
     const headerMarginTop = 25; // Increased from 15
     const minHeight = 160; // Even smaller minimum for very short text
-    const maxHeight = 800;
+    const maxHeight = 2000; // Increased to accommodate tall embedded images + content
     
     // Estimate number of lines more accurately
     const words = text.split(' ');
