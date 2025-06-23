@@ -108,8 +108,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let isPostPreview = false;
   let shouldUseSimple = useSimpleFormat;
   
-  // If using standard preview, skip composite image generation
-  if (useStandardPreview) {
+  // If using standard preview OR it's WhatsApp/Telegram, skip composite image generation
+  if (useStandardPreview || isWhatsApp || isTelegram) {
     // Use the embedded image if available, otherwise use profile picture
     if (!previewImage && cast?.author.pfp_url) {
       previewImage = cast.author.pfp_url;
@@ -190,18 +190,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let title: string;
   let description: string;
   
-  if (useStandardPreview) {
+  if (useStandardPreview || isWhatsApp || isTelegram) {
     // Standard preview: title is post text, description is "username on Farcaster"
     title = cast ? cleanText || 'Farcaster' : 'Loading cast content...';
     description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
-  } else if (isPostPreview && !isWhatsApp) {
+  } else if (isPostPreview) {
     // When using composite post preview, no title or description (everything is in the image)
     // Exception: WhatsApp needs title/description to show preview
     title = '';
-    description = '';
-  } else if (isWhatsApp) {
-    // WhatsApp needs a title to show preview
-    title = cast ? `${displayName} on Farcaster` : 'Farcaster';
     description = '';
   } else if (isAppleMessages) {
     // For Apple Messages: put display name at beginning of title, no description
@@ -247,7 +243,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     let imageHeight: number | undefined;
     let imageAlt: string;
     
-    if (useStandardPreview) {
+    if (useStandardPreview || isWhatsApp || isTelegram) {
       // Standard preview uses appropriate dimensions based on image type
       if (hasEmbeddedImage) {
         imageWidth = 1200;
