@@ -26,10 +26,27 @@ export async function GET(request: NextRequest) {
     
     // Calculate embedded image height if present
     let embeddedImageHeight = 0;
+    
     if (embeddedImage) {
-      // Default aspect ratio 16:9 if we can't determine
-      // In production, you might want to fetch image dimensions
-      embeddedImageHeight = Math.round(600 * 9 / 16); // 337.5 -> 338px for 16:9
+      // Get aspect ratio from URL parameters (passed from Neynar data)
+      const aspectRatioParam = searchParams.get('aspectRatio');
+      let aspectRatio = 0.75; // Default to 4:3
+      
+      if (aspectRatioParam) {
+        aspectRatio = parseFloat(aspectRatioParam);
+        // Validate aspect ratio is reasonable
+        if (isNaN(aspectRatio) || aspectRatio <= 0 || aspectRatio > 3) {
+          aspectRatio = 0.75; // Fall back to 4:3
+        }
+      }
+      
+      // Calculate height for 600px width
+      embeddedImageHeight = Math.round(600 * aspectRatio);
+      
+      // Cap maximum height to prevent extremely tall images
+      embeddedImageHeight = Math.min(embeddedImageHeight, 800);
+      
+      console.log(`[OG-Post] Embedded image - Aspect ratio: ${aspectRatio}, Height: ${embeddedImageHeight}px`);
     }
 
     // Calculate dynamic height based on text length
@@ -96,7 +113,10 @@ export async function GET(request: NextRequest) {
                 width={600}
                 height={embeddedImageHeight}
                 style={{
-                  objectFit: 'cover',
+                  width: '600px',
+                  height: `${embeddedImageHeight}px`,
+                  objectFit: 'contain',
+                  backgroundColor: '#17101f',
                 }}
               />
             </>

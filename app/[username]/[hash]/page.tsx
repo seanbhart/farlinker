@@ -54,6 +54,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let previewImage: string | undefined;
   let hasEmbeddedImage = false;
   let firstEmbeddedImage: string | undefined;
+  let firstEmbeddedImageDimensions: { width: number; height: number } | undefined;
   const embedUrls: string[] = [];
   
   if (cast?.embeds && cast.embeds.length > 0) {
@@ -66,9 +67,18 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
                        embed.url.includes('imgur.com') ||
                        embed.url.includes('i.imgur.com');
         
-        // Store the first image URL
+        // Store the first image URL and its dimensions if available
         if (!firstEmbeddedImage && isImage) {
           firstEmbeddedImage = embed.url;
+          
+          // Check if Neynar provides image dimensions in metadata
+          if ('metadata' in embed && embed.metadata?.image) {
+            const { width_px, height_px } = embed.metadata.image;
+            if (width_px && height_px) {
+              firstEmbeddedImageDimensions = { width: width_px, height: height_px };
+              console.log('[Metadata] Found image dimensions:', width_px, 'x', height_px);
+            }
+          }
         }
         
         // Use the first image URL as preview image
@@ -114,6 +124,13 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         if (firstEmbeddedImage) {
           const encodedImage = encodeURIComponent(firstEmbeddedImage);
           compositeUrl += `&image=${encodedImage}`;
+          
+          // Add aspect ratio if we have dimensions from Neynar
+          if (firstEmbeddedImageDimensions) {
+            const aspectRatio = firstEmbeddedImageDimensions.height / firstEmbeddedImageDimensions.width;
+            compositeUrl += `&aspectRatio=${aspectRatio}`;
+            console.log('[Metadata] Passing aspect ratio:', aspectRatio);
+          }
         }
         
         previewImage = compositeUrl;
