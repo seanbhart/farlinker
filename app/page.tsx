@@ -72,7 +72,7 @@ export default function Home() {
               </div>
             </div>
             <p className="text-gray-500 text-sm mt-4">
-              Try clicking the Farlinker URLs above to see them in action. The standard format provides a cleaner, text-focused preview.
+              Try sharing the Farlinker URLs above to see them in action.
             </p>
           </div>
           
