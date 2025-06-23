@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const postText = searchParams.get('text');
     const username = searchParams.get('username');
     const embeddedImage = searchParams.get('image');
+    const platform = searchParams.get('platform');
     
     if (!pfp || !displayName || !username) {
       return new Response('Missing parameters', { 
@@ -43,10 +44,11 @@ export async function GET(request: NextRequest) {
       // Calculate height for 600px width
       embeddedImageHeight = Math.round(600 * aspectRatio);
       
-      // Cap maximum height to prevent extremely tall images
-      embeddedImageHeight = Math.min(embeddedImageHeight, 1200);
+      // Cap maximum height based on platform
+      const maxEmbedHeight = platform === 'messaging' ? 400 : 1200;
+      embeddedImageHeight = Math.min(embeddedImageHeight, maxEmbedHeight);
       
-      console.log(`[OG-Post] Embedded image - Aspect ratio: ${aspectRatio}, Height: ${embeddedImageHeight}px`);
+      console.log(`[OG-Post] Platform: ${platform || 'default'}, Embedded image - Aspect ratio: ${aspectRatio}, Height: ${embeddedImageHeight}px`);
     }
 
     // Calculate dynamic height based on text length
@@ -60,7 +62,8 @@ export async function GET(request: NextRequest) {
     const headerHeight = 60; // profile section height
     const headerMarginTop = 25; // Increased from 15
     const minHeight = 160; // Even smaller minimum for very short text
-    const maxHeight = 2000; // Increased to accommodate tall embedded images + content
+    // Platform-specific max height - messaging apps have stricter limits
+    const maxHeight = platform === 'messaging' ? 800 : 2000;
     
     // Estimate number of lines more accurately
     const words = text.split(' ');
@@ -138,9 +141,10 @@ export async function GET(request: NextRequest) {
                 lineHeight: '42px',
                 fontWeight: 400,
                 color: 'white',
-                overflow: 'hidden',
                 display: 'block',
                 marginBottom: 'auto',
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap',
               }}
             >
               {text}

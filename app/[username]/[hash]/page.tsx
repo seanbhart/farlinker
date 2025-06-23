@@ -38,11 +38,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
-  // Check if this is Apple Messages or WhatsApp
+  // Check if this is Apple Messages or WhatsApp or Telegram
   const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages specific pattern
   const isWhatsApp = userAgent.toLowerCase().includes('whatsapp') || 
                      userAgent.includes('WhatsApp') ||
                      (userAgent.includes('facebookexternalhit/1.1') && !userAgent.includes('Twitterbot'));
+  const isTelegram = userAgent.toLowerCase().includes('telegram');
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
@@ -130,6 +131,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
             const aspectRatio = firstEmbeddedImageDimensions.height / firstEmbeddedImageDimensions.width;
             compositeUrl += `&aspectRatio=${aspectRatio}`;
             console.log('[Metadata] Passing aspect ratio:', aspectRatio);
+          }
+          
+          // Pass platform info for platform-specific limits
+          if (isWhatsApp || isTelegram) {
+            compositeUrl += '&platform=messaging';
           }
         }
         
