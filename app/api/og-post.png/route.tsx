@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate dynamic height based on text length
     // More accurate calculation based on average character width
-    const avgCharWidth = 12; // Average for 32px font
+    const avgCharWidth = 14; // Adjusted for 32px font (was too small)
     const containerWidth = 520; // 600px - 80px padding
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
     const lineHeight = 42;
@@ -66,24 +66,35 @@ export async function GET(request: NextRequest) {
     const maxHeight = platform === 'messaging' ? 800 : 2000;
     
     // Estimate number of lines more accurately
-    const words = text.split(' ');
-    let currentLineLength = 0;
-    let lines = 1;
+    // First, split by newlines to handle explicit line breaks
+    const textLines = text.split('\n');
+    let lines = 0;
     
-    for (const word of words) {
-      const wordLength = word.length + 1; // +1 for space
-      if (currentLineLength + wordLength > charsPerLine && currentLineLength > 0) {
-        lines++;
-        currentLineLength = wordLength;
-      } else {
-        currentLineLength += wordLength;
+    for (const line of textLines) {
+      if (line.length === 0) {
+        lines += 1; // Empty line
+        continue;
       }
+      
+      const words = line.split(' ');
+      let currentLineLength = 0;
+      let lineCount = 1;
+      
+      for (const word of words) {
+        const wordLength = word.length + 1; // +1 for space
+        if (currentLineLength + wordLength > charsPerLine && currentLineLength > 0) {
+          lineCount++;
+          currentLineLength = wordLength;
+        } else {
+          currentLineLength += wordLength;
+        }
+      }
+      
+      lines += lineCount;
     }
     
-    // Don't add extra line for short text
-    if (text.length > charsPerLine * 2) {
-      lines += 0.5; // Add half line for word wrapping safety on longer text
-    }
+    // Add a bit of buffer for safety
+    lines = Math.max(lines, 1) + 0.5;
     
     const textHeight = Math.ceil(lines) * lineHeight;
     const textTopPadding = embeddedImage ? 25 : topPadding; // Add padding after image
@@ -91,9 +102,16 @@ export async function GET(request: NextRequest) {
     const calculatedHeight = embeddedImageHeight + textTopPadding + textHeight + headerMarginTop + headerHeight + headerBottomMargin + bottomPadding;
     
     // Use calculated height with min/max constraints
-    const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
+    // For messaging platforms with embedded images, prioritize showing content over strict limits
+    let dynamicHeight = calculatedHeight;
+    if (platform === 'messaging' && embeddedImage) {
+      // Allow slightly more height for messaging apps with images to show full content
+      dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, 1000));
+    } else {
+      dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
+    }
     
-    console.log(`[OG-Post] Text: "${text}", Lines: ${lines}, Embedded image: ${embeddedImageHeight}px, Calculated height: ${calculatedHeight}, Final height: ${dynamicHeight}`);
+    console.log(`[OG-Post] Platform: ${platform}, Text: "${text}", Lines: ${lines}, Text height: ${textHeight}px, Embedded image: ${embeddedImageHeight}px, Calculated height: ${calculatedHeight}, Final height: ${dynamicHeight}, Max height: ${maxHeight}`);
 
     const response = new ImageResponse(
       (
