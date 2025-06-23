@@ -39,12 +39,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
   
-  // Check if this is Apple Messages or WhatsApp or Telegram
+  // Check if this is Apple Messages or WhatsApp or Telegram or Facebook or LinkedIn
   const isAppleMessages = userAgent.includes('facebookexternalhit/1.1 Facebot Twitterbot/1.0'); // Apple Messages specific pattern
   const isWhatsApp = userAgent.toLowerCase().includes('whatsapp') || 
                      userAgent.includes('WhatsApp') ||
-                     (userAgent.includes('facebookexternalhit/1.1') && !userAgent.includes('Twitterbot'));
+                     (userAgent.includes('facebookexternalhit/1.1') && !userAgent.includes('Twitterbot') && !userAgent.includes('Facebot'));
   const isTelegram = userAgent.toLowerCase().includes('telegram');
+  const isFacebook = userAgent.includes('facebookexternalhit') && !isAppleMessages && !isWhatsApp;
+  const isLinkedIn = userAgent.toLowerCase().includes('linkedinbot');
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
@@ -108,8 +110,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let isPostPreview = false;
   let shouldUseSimple = useSimpleFormat;
   
-  // If using standard preview OR it's WhatsApp/Telegram, skip composite image generation
-  if (useStandardPreview || isWhatsApp || isTelegram) {
+  // If using standard preview OR it's WhatsApp/Telegram/Facebook/LinkedIn, skip composite image generation
+  if (useStandardPreview || isWhatsApp || isTelegram || isFacebook || isLinkedIn) {
     // Use the embedded image if available, otherwise use profile picture
     if (!previewImage && cast?.author.pfp_url) {
       previewImage = cast.author.pfp_url;
@@ -190,7 +192,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let title: string;
   let description: string;
   
-  if (useStandardPreview || isWhatsApp || isTelegram) {
+  if (useStandardPreview || isWhatsApp || isTelegram || isFacebook || isLinkedIn) {
     // Standard preview: title is post text, description is "username on Farcaster"
     title = cast ? cleanText || 'Farcaster' : 'Loading cast content...';
     description = cast ? `${displayName} on Farcaster` : 'View on Farcaster';
@@ -243,7 +245,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     let imageHeight: number | undefined;
     let imageAlt: string;
     
-    if (useStandardPreview || isWhatsApp || isTelegram) {
+    if (useStandardPreview || isWhatsApp || isTelegram || isFacebook || isLinkedIn) {
       // Standard preview uses appropriate dimensions based on image type
       if (hasEmbeddedImage) {
         imageWidth = 1200;
