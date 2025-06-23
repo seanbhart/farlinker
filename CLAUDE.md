@@ -53,7 +53,7 @@ The Farcaster Action has been fully implemented with the following features:
    - Fill in the required fields:
      - **Name**: Farlinker
      - **Action URL**: `https://farlinker.xyz/api/actions/farlinker`
-     - **Description**: Copy enhanced preview links for Farcaster posts
+     - **Description**: create enhanced preview links for Farcaster posts
      - **Icon**: Link icon (or upload custom icon)
 
 3. **Validation Process**

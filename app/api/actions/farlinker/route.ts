@@ -19,20 +19,19 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || 'farlinker.xyz';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     
-    // Return modal response
-    const modalUrl = `${protocol}://${host}/actions/modal?castId=${castId.hash}&fid=${castId.fid}`;
-    console.log('[Farlinker Action] Returning modal URL:', modalUrl);
+    // Return frame response (actions spec only supports message/frame/error types)
+    const frameUrl = `${protocol}://${host}/actions/modal?castId=${castId.hash}&fid=${castId.fid}`;
+    console.log('[Farlinker Action] Returning frame URL:', frameUrl);
     
     return NextResponse.json({
-      type: 'modal',
-      title: 'Share with Farlinker',
-      url: modalUrl
+      type: 'frame',
+      frameUrl: frameUrl
     });
   } catch (error) {
     console.error('[Farlinker Action] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to process action' },
-      { status: 500 }
+      { message: 'Failed to process action' },
+      { status: 400 }
     );
   }
 }
@@ -41,12 +40,12 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     name: 'Farlinker',
-    icon: 'link',
-    description: 'Generate shareable preview links',
+    icon: 'link-external',
+    description: 'create enhanced preview links for Farcaster posts',
     aboutUrl: 'https://farlinker.xyz',
     action: {
       type: 'post',
-      url: 'https://farlinker.xyz/api/actions/farlinker'
+      postUrl: 'https://farlinker.xyz/api/actions/farlinker'
     }
   });
 }

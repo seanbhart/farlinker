@@ -37,8 +37,8 @@ export default function TestAction() {
       const data = await res.json();
       setResponse(data);
       
-      if (data.type === 'modal' && data.url) {
-        setModalUrl(data.url);
+      if (data.type === 'frame' && data.frameUrl) {
+        setModalUrl(data.frameUrl);
       }
     } catch (error) {
       console.error('Error testing action:', error);
@@ -129,9 +129,9 @@ export default function TestAction() {
             <h3 className="text-lg font-semibold text-white mb-3">Testing Instructions:</h3>
             <ol className="text-gray-300 space-y-2 list-decimal list-inside">
               <li>Click &quot;Test Action Endpoint&quot; to simulate a Farcaster action request</li>
-              <li>Check the response - it should return a modal type with a URL</li>
+              <li>Check the response - it should return a frame type with a frameUrl</li>
               <li>Click &quot;Open Modal in New Tab&quot; to test the modal interface</li>
-              <li>The modal should show 4 options for sharing/copying links</li>
+              <li>The modal should show 2 options for copying links</li>
               <li>Test the metadata endpoint to ensure it returns proper action configuration</li>
             </ol>
           </div>
