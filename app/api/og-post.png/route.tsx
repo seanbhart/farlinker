@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const postText = searchParams.get('text');
     const username = searchParams.get('username');
     
-    if (!pfp || !displayName || !postText || !username) {
+    if (!pfp || !displayName || !username) {
       return new Response('Missing parameters', { 
         status: 400,
         headers: {
@@ -19,6 +19,9 @@ export async function GET(request: NextRequest) {
         },
       });
     }
+    
+    // Handle empty text
+    const text = postText || '';
 
     // Calculate dynamic height based on text length
     // More accurate calculation based on average character width
@@ -32,7 +35,7 @@ export async function GET(request: NextRequest) {
     const maxHeight = 800;
     
     // Estimate number of lines (add extra line for word wrapping safety)
-    const estimatedLines = Math.ceil(postText.length / charsPerLine) + 1;
+    const estimatedLines = Math.ceil(text.length / charsPerLine) + 1;
     const textHeight = estimatedLines * lineHeight;
     const calculatedHeight = topBottomPadding + textHeight + headerHeight;
     

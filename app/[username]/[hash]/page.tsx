@@ -30,8 +30,9 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const { username, hash } = await params;
   const urlParams = await searchParams;
   
-  // Check if preview parameter is present
-  const forcePreview = urlParams.preview === 'true' || urlParams.preview === '1';
+  // Check if we should use the simple format (backup option)
+  const useSimpleFormat = urlParams.simple === 'true' || urlParams.simple === '1';
+  console.log('[Metadata] URL params:', urlParams, 'Use simple format:', useSimpleFormat);
   
   // Get headers to check user agent
   const headersList = await headers();
@@ -43,6 +44,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   
   // Fetch cast data using Neynar SDK
   const cast = await fetchCastByUrl(username, hash);
+  console.log('[Metadata] Cast data:', cast ? 'Found' : 'Not found', 'Author:', cast?.author?.username);
   
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://farlinker.xyz';
   
@@ -84,13 +86,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   // Track if we're using a composite image
   let isCompositeImage = false;
   let isPostPreview = false;
+  let shouldUseSimple = useSimpleFormat;
   
   // If no embedded image, handle differently based on platform
   if (!previewImage && cast?.author.pfp_url) {
     const displayName = cast.author.display_name || cast.author.username;
     
-    // Check if we should force the preview format with post text
-    if (forcePreview && cleanText) {
+    // Default behavior: use composite image with post text
+    if (!shouldUseSimple) {
       try {
         // Create composite image with user header and post text
         const encodedPfp = encodeURIComponent(cast.author.pfp_url);
@@ -101,34 +104,36 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         isCompositeImage = true;
         isPostPreview = true;
         hasEmbeddedImage = false; // Use smaller dimensions
-        console.log('[Metadata] Generated post preview image URL (forced):', previewImage);
+        console.log('[Metadata] Generated post preview image URL:', previewImage);
       } catch (error) {
         console.error('[Metadata] Failed to generate post preview image:', error);
+        // Fall back to simple format
+        shouldUseSimple = true;
       }
     }
-    // For Apple Messages and WhatsApp without embedded images, use simple composite image
-    else if ((isAppleMessages || isWhatsApp) && !hasEmbeddedImage) {
-      try {
-        // Create composite image with profile pic and name
-        // Add .png extension to make it look like a static image
-        const encodedPfp = encodeURIComponent(cast.author.pfp_url);
-        const encodedName = encodeURIComponent(displayName);
-        previewImage = `${baseUrl}/api/og-image.png?pfp=${encodedPfp}&name=${encodedName}`;
-        isCompositeImage = true;
-        console.log('[Metadata] Generated composite image URL:', previewImage);
-      } catch (error) {
-        console.error('[Metadata] Failed to generate composite image:', error);
-        // Fall back to profile picture
+    
+    // Simple format (backup option or fallback)
+    if (shouldUseSimple) {
+      if (isAppleMessages || isWhatsApp) {
+        try {
+          // Create simple composite image with profile pic and name
+          const encodedPfp = encodeURIComponent(cast.author.pfp_url);
+          const encodedName = encodeURIComponent(displayName);
+          previewImage = `${baseUrl}/api/og-image.png?pfp=${encodedPfp}&name=${encodedName}`;
+          isCompositeImage = true;
+          console.log('[Metadata] Generated simple composite image URL:', previewImage);
+        } catch (error) {
+          console.error('[Metadata] Failed to generate simple composite image:', error);
+          previewImage = cast.author.pfp_url;
+        }
+      } else {
+        // For other platforms, use the profile picture
         previewImage = cast.author.pfp_url;
       }
-    } else if (!isAppleMessages) {
-      // For other platforms (not Apple Messages), use the profile picture
-      previewImage = cast.author.pfp_url;
-      // Keep hasEmbeddedImage as false so it uses the small card format
     }
     
     // Log for debugging
-    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}, ForcePreview: ${forcePreview}`);
+    console.log(`[Metadata] Platform: ${isAppleMessages ? 'Apple Messages' : isWhatsApp ? 'WhatsApp' : 'Other'}, Using image: ${previewImage || 'none'}, Composite: ${isCompositeImage}, UseSimple: ${useSimpleFormat}`);
   }
   
   // Set metadata according to requirements based on platform
@@ -137,8 +142,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let title: string;
   let description: string;
   
-  if (forcePreview) {
-    // When using preview=true, no title or description (everything is in the image)
+  if (isPostPreview) {
+    // When using composite post preview, no title or description (everything is in the image)
     title = '';
     description = '';
   } else if (isAppleMessages) {
@@ -163,7 +168,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       title,
       description,
       url: `${baseUrl}/${username}/${hash}`,
-      siteName: forcePreview ? '' : 'Farcaster',
+      siteName: isPostPreview ? '' : 'Farcaster',
       type: 'article',
       locale: 'en_US',
       alternateLocale: 'en',
