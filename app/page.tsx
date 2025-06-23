@@ -5,15 +5,18 @@ import { track } from '@vercel/analytics';
 
 export default function Home() {
   const shareViaMessages = (url: string, format: 'enhanced' | 'standard') => {
+    // Check if native share is available
+    const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
+    
     // Track the share action
     track('share_button_clicked', {
       format,
       url,
-      method: navigator.share ? 'native_share' : 'clipboard'
+      method: canShare ? 'native_share' : 'clipboard'
     });
 
     // Use native share API if available (mobile)
-    if (navigator.share) {
+    if (canShare) {
       navigator.share({
         text: url,
       }).catch(() => {
