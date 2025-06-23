@@ -41,7 +41,7 @@ export async function GET() {
   return NextResponse.json({
     name: 'Farlinker',
     icon: 'link-external',
-    description: 'copy enhanced links',
+    description: 'create enhanced link previews',
     aboutUrl: 'https://farlinker.xyz',
     action: {
       type: 'post',
