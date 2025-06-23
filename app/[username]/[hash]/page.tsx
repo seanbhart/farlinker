@@ -166,7 +166,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     description = '';
   } else if (isWhatsApp) {
     // WhatsApp needs a title to show preview
-    title = cast ? cleanText || `${displayName} on Farcaster` : 'Farcaster';
+    title = cast ? `${displayName} on Farcaster` : 'Farcaster';
     description = '';
   } else if (isAppleMessages) {
     // For Apple Messages: put display name at beginning of title, no description
