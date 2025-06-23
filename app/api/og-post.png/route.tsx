@@ -96,8 +96,22 @@ export async function GET(request: NextRequest) {
     // Add a bit of buffer for safety
     lines = Math.max(lines, 1) + 0.5;
     
-    const textHeight = Math.ceil(lines) * lineHeight;
-    const textTopPadding = embeddedImage ? 25 : topPadding; // Add padding after image
+    // Calculate text height - minimize if no text (except for platforms that need it)
+    let textHeight = Math.ceil(lines) * lineHeight;
+    let textTopPadding = embeddedImage ? 25 : topPadding;
+    
+    // If no text, minimize the text area (but keep some space for WhatsApp)
+    if (!text || text.trim().length === 0) {
+      if (platform === 'messaging') {
+        // WhatsApp needs some text area even if empty
+        textHeight = lineHeight; // One line height
+      } else {
+        // Other platforms can have minimal text area
+        textHeight = 0;
+        textTopPadding = embeddedImage ? 15 : 10; // Reduce padding too
+      }
+    }
+    
     const headerBottomMargin = 10; // Additional margin on username div
     const calculatedHeight = embeddedImageHeight + textTopPadding + textHeight + headerMarginTop + headerHeight + headerBottomMargin + bottomPadding;
     
@@ -153,20 +167,23 @@ export async function GET(request: NextRequest) {
             }}
           >
             {/* Post text */}
-            <div
-              style={{
-                fontSize: 32,
-                lineHeight: '42px',
-                fontWeight: 400,
-                color: 'white',
-                display: 'block',
-                marginBottom: 'auto',
-                wordBreak: 'break-word',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {text}
-            </div>
+            {(text || platform === 'messaging') && (
+              <div
+                style={{
+                  fontSize: 32,
+                  lineHeight: '42px',
+                  fontWeight: 400,
+                  color: 'white',
+                  display: 'block',
+                  marginBottom: 'auto',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  minHeight: platform === 'messaging' ? '42px' : undefined,
+                }}
+              >
+                {text}
+              </div>
+            )}
 
             {/* User header */}
             <div
