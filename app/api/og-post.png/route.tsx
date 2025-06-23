@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const displayName = searchParams.get('name');
     const postText = searchParams.get('text');
     const username = searchParams.get('username');
+    const embeddedImage = searchParams.get('image');
     
     if (!pfp || !displayName || !username) {
       return new Response('Missing parameters', { 
@@ -22,6 +23,14 @@ export async function GET(request: NextRequest) {
     
     // Handle empty text
     const text = postText || '';
+    
+    // Calculate embedded image height if present
+    let embeddedImageHeight = 0;
+    if (embeddedImage) {
+      // Default aspect ratio 16:9 if we can't determine
+      // In production, you might want to fetch image dimensions
+      embeddedImageHeight = Math.round(600 * 9 / 16); // 337.5 -> 338px for 16:9
+    }
 
     // Calculate dynamic height based on text length
     // More accurate calculation based on average character width
@@ -57,12 +66,13 @@ export async function GET(request: NextRequest) {
     }
     
     const textHeight = Math.ceil(lines) * lineHeight;
-    const calculatedHeight = topPadding + textHeight + headerMarginTop + headerHeight + bottomPadding;
+    const imageMargin = embeddedImage ? 15 : 0; // Space between image and text
+    const calculatedHeight = topPadding + embeddedImageHeight + imageMargin + textHeight + headerMarginTop + headerHeight + bottomPadding;
     
     // Use calculated height with min/max constraints
     const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
     
-    console.log(`[OG-Post] Text: "${text}", Lines: ${lines}, Calculated height: ${calculatedHeight}, Final height: ${dynamicHeight}`);
+    console.log(`[OG-Post] Text: "${text}", Lines: ${lines}, Embedded image: ${embeddedImageHeight}px, Calculated height: ${calculatedHeight}, Final height: ${dynamicHeight}`);
 
     const response = new ImageResponse(
       (
@@ -76,6 +86,23 @@ export async function GET(request: NextRequest) {
             padding: '25px 40px 15px 40px',
           }}
         >
+          {/* Embedded image if present */}
+          {embeddedImage && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+              <img
+                src={embeddedImage}
+                width={520}
+                height={embeddedImageHeight}
+                style={{
+                  borderRadius: '12px',
+                  objectFit: 'cover',
+                  marginBottom: '15px',
+                }}
+              />
+            </>
+          )}
+          
           {/* Post text */}
           <div
             style={{

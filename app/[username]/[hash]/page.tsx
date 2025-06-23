@@ -51,6 +51,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   // Extract first image from cast embeds if available
   let previewImage: string | undefined;
   let hasEmbeddedImage = false;
+  let firstEmbeddedImage: string | undefined;
   const embedUrls: string[] = [];
   
   if (cast?.embeds && cast.embeds.length > 0) {
@@ -62,6 +63,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
                        embed.url.includes('imagedelivery.net') ||
                        embed.url.includes('imgur.com') ||
                        embed.url.includes('i.imgur.com');
+        
+        // Store the first image URL
+        if (!firstEmbeddedImage && isImage) {
+          firstEmbeddedImage = embed.url;
+        }
         
         // Use the first image URL as preview image
         if (!previewImage && isImage) {
@@ -88,8 +94,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   let isPostPreview = false;
   let shouldUseSimple = useSimpleFormat;
   
-  // If no embedded image, handle differently based on platform
-  if (!previewImage && cast?.author.pfp_url) {
+  // If no embedded image OR we're creating a composite, handle differently based on platform
+  if ((!previewImage || !shouldUseSimple) && cast?.author.pfp_url) {
     const displayName = cast.author.display_name || cast.author.username;
     
     // Default behavior: use composite image with post text
@@ -100,11 +106,20 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
         const encodedName = encodeURIComponent(displayName);
         const encodedText = encodeURIComponent(cleanText);
         const encodedUsername = encodeURIComponent(cast.author.username);
-        previewImage = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}&username=${encodedUsername}`;
+        let compositeUrl = `${baseUrl}/api/og-post.png?pfp=${encodedPfp}&name=${encodedName}&text=${encodedText}&username=${encodedUsername}`;
+        
+        // Add embedded image if available
+        if (firstEmbeddedImage) {
+          const encodedImage = encodeURIComponent(firstEmbeddedImage);
+          compositeUrl += `&image=${encodedImage}`;
+        }
+        
+        previewImage = compositeUrl;
         isCompositeImage = true;
         isPostPreview = true;
         hasEmbeddedImage = false; // Use smaller dimensions
         console.log('[Metadata] Generated post preview image URL:', previewImage);
+        console.log('[Metadata] Embedded image included:', !!firstEmbeddedImage);
       } catch (error) {
         console.error('[Metadata] Failed to generate post preview image:', error);
         // Fall back to simple format
