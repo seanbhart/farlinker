@@ -7,10 +7,22 @@
   "frame": {
     "version": "1",
     "name": "Farlinker",
-    "iconUrl": "https://farlinker.xyz/icon.png",
-    "splashImageUrl": "https://farlinker.xyz/splash.png",
+    "iconUrl": "https://farlinker.xyz/farlinker.png",
+    "splashImageUrl": "https://farlinker.xyz/farlinker.png",
     "splashBackgroundColor": "#8B5CF6",
     "homeUrl": "https://farlinker.xyz",
     "webhookUrl": "https://farlinker.xyz/api/webhook"
-  }
+  },
+  "actions": [
+    {
+      "name": "Farlinker",
+      "icon": "link",
+      "description": "Generate shareable preview links",
+      "aboutUrl": "https://farlinker.xyz",
+      "action": {
+        "type": "post",
+        "url": "https://farlinker.xyz/api/actions/farlinker"
+      }
+    }
+  ]
 }

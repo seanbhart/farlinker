@@ -28,6 +28,8 @@ export function middleware(request: NextRequest) {
     pathname === '/apple-touch-icon.png' ||
     pathname === '/apple-touch-icon-precomposed.png' ||
     pathname === '/.well-known/farcaster.json' ||
+    pathname === '/test-action' ||
+    pathname.startsWith('/actions/') ||
     pathname.endsWith('.png') ||
     pathname.endsWith('.jpg') ||
     pathname.endsWith('.jpeg') ||

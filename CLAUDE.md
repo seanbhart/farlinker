@@ -6,225 +6,132 @@ This file provides guidance to Claude Code (claude.ai/code) for developing Farli
 
 Farlinker is a link preview enhancement service for Farcaster posts. We'll develop both Farcaster Actions (Phase 1) and a Mini App (Phase 2) to help users generate and share Farlinker URLs.
 
-## Phase 1: Farcaster Actions (Priority)
+## Current Development Status
 
-### Actions Concept
+### ✅ Phase 1: Farcaster Actions - COMPLETED
 
-We'll create a single Farcaster Action that opens a modal interface, allowing users to choose from multiple sharing options with visual previews. When users click the "Farlinker" action button under any cast, they'll see:
+The Farcaster Action has been fully implemented with the following features:
 
-1. **Share in Farlinker format** - Generate enhanced preview link and open share menu
-2. **Copy Farlinker link** - Generate enhanced preview link and copy to clipboard
-3. **Share in standard format** - Generate standard OG preview link and open share menu
-4. **Copy standard link** - Generate standard OG preview link and copy to clipboard
-
-Each option will show a preview image demonstrating how the link will appear when shared.
-
-### Actions Development Plan
-
-#### Step 1: Actions Infrastructure Setup
-
-1. **Create Action Modal Endpoint**
-   - Set up `/api/actions/farlinker/route.ts` as the main action handler
-   - Create `/app/actions/modal/page.tsx` for the modal interface
-   - Set up image assets for preview examples
-
-2. **Implement Modal Interface**
-   - Design responsive modal with 4 sharing options
-   - Include preview images for each format type
-   - Handle user selection and execute appropriate action
-
-3. **Action Metadata**
-   - Create metadata endpoint that describes the Farlinker action
-   - Include action name, description, and icon
-   - Define modal response type
-
-#### Step 2: Core Action Functionality
-
-1. **Main Action Handler**
-   ```typescript
-   // /api/actions/farlinker/route.ts
-   export async function POST(request: Request) {
-     const { untrustedData } = await request.json();
-     const { castId } = untrustedData;
-     
-     // Return modal response
-     return Response.json({
-       type: 'modal',
-       title: 'Share with Farlinker',
-       url: `https://farlinker.xyz/actions/modal?castId=${castId.hash}&fid=${castId.fid}`
-     });
-   }
-   ```
+1. **Action Infrastructure**
+   - Action endpoint at `/api/actions/farlinker/route.ts`
+   - Modal interface at `/app/actions/modal/page.tsx`
+   - Cast details API at `/api/cast-details/route.ts`
 
 2. **Modal Interface**
-   ```typescript
-   // /app/actions/modal/page.tsx
-   export default function ActionModal({ searchParams }) {
-     const { castId, fid } = searchParams;
-     
-     const options = [
-       {
-         id: 'share-enhanced',
-         title: 'Share in Farlinker format',
-         description: 'Enhanced preview with images',
-         preview: '/apple_messages_farlinker.png',
-         action: 'share'
-       },
-       {
-         id: 'copy-enhanced',
-         title: 'Copy Farlinker link',
-         description: 'Enhanced preview link',
-         preview: '/apple_messages_farlinker.png',
-         action: 'copy'
-       },
-       {
-         id: 'share-standard',
-         title: 'Share in standard format',
-         description: 'Clean text preview',
-         preview: '/apple_messages_farlinker_standard.png',
-         action: 'share'
-       },
-       {
-         id: 'copy-standard',
-         title: 'Copy standard link',
-         description: 'Standard preview link',
-         preview: '/apple_messages_farlinker_standard.png',
-         action: 'copy'
-       }
-     ];
-     
-     return (
-       <div className="modal-container">
-         {options.map(option => (
-           <OptionCard key={option.id} {...option} castData={{castId, fid}} />
-         ))}
-       </div>
-     );
-   }
-   ```
+   - Simplified to 2 copy options (enhanced and standard formats)
+   - Visual preview images for each format
+   - Responsive design with tall, narrow buttons
+   - Copy feedback with "✓ Copied!" message
 
-3. **Action Execution**
-   ```typescript
-   // Handle user selection in modal
-   async function handleOptionClick(option: OptionType, castData: CastData) {
-     const { authorUsername, hash } = await fetchCastDetails(castData);
-     const isStandard = option.id.includes('standard');
-     const farlinkerUrl = `https://farlinker.xyz/${authorUsername}/${hash}${isStandard ? '?preview=standard' : ''}`;
-     
-     if (option.action === 'share') {
-       // Trigger native share
-       window.parent.postMessage({
-         type: 'fc:action',
-         data: {
-           action: 'share',
-           url: farlinkerUrl
-         }
-       }, '*');
-     } else {
-       // Copy to clipboard
-       window.parent.postMessage({
-         type: 'fc:action',
-         data: {
-           action: 'copy',
-           text: farlinkerUrl
-         }
-       }, '*');
-     }
-   }
-   ```
+3. **Testing Infrastructure**
+   - Test page at `/test-action` for local development
+   - Dual clipboard approach (direct + postMessage) for testing
+   - Documentation in `TESTING_ACTIONS.md`
 
-#### Step 3: Modal Design & UX
+4. **Analytics Integration**
+   - Vercel Analytics tracking for all actions
+   - Event tracking for modal selections
+   - Link visit tracking
 
-1. **Modal Layout**
-   ```css
-   /* Modal styling for 2x2 grid */
-   .modal-container {
-     display: grid;
-     grid-template-columns: 1fr 1fr;
-     gap: 16px;
-     padding: 20px;
-     max-width: 600px;
-   }
-   
-   .option-card {
-     border: 1px solid #e0e0e0;
-     border-radius: 12px;
-     padding: 16px;
-     cursor: pointer;
-     transition: all 0.2s;
-   }
-   
-   .option-card:hover {
-     border-color: #8b5cf6;
-     background: #f9f5ff;
-   }
-   
-   .preview-image {
-     width: 100%;
-     height: 120px;
-     object-fit: cover;
-     border-radius: 8px;
-     margin-bottom: 12px;
-   }
-   ```
+### 🚀 Next Steps: Action Registration
 
-2. **Visual Preview Integration**
-   - Use actual example images from landing page
-   - Show clear distinction between enhanced and standard formats
-   - Include hover states and selection feedback
+#### 1. Pre-Registration Checklist
+- [ ] Deploy to production (Vercel or similar)
+- [ ] Ensure HTTPS is enabled
+- [ ] Verify manifest is accessible at `https://farlinker.xyz/.well-known/farcaster.json`
+- [ ] Test action endpoint at `https://farlinker.xyz/api/actions/farlinker`
+- [ ] Confirm modal loads at `https://farlinker.xyz/actions/modal?castId=HASH&fid=FID`
 
-3. **Accessibility**
-   - Keyboard navigation support
-   - Clear focus indicators
-   - Descriptive labels for screen readers
+#### 2. Registration Process
 
-#### Step 4: Action Registration
+1. **Access Warpcast Developer Tools**
+   - Go to https://warpcast.com/~/developers/actions
+   - Or navigate through Settings → Developer → Actions
 
-1. **Create Action Manifest**
-   ```json
-   {
-     "name": "Farlinker",
-     "icon": "link",
-     "description": "Generate shareable preview links",
-     "aboutUrl": "https://farlinker.xyz/about",
-     "action": {
-       "type": "post",
-       "url": "https://farlinker.xyz/api/actions/farlinker"
-     }
-   }
-   ```
+2. **Submit New Action**
+   - Click "Create Action"
+   - Fill in the required fields:
+     - **Name**: Farlinker
+     - **Action URL**: `https://farlinker.xyz/api/actions/farlinker`
+     - **Description**: Copy enhanced preview links for Farcaster posts
+     - **Icon**: Link icon (or upload custom icon)
 
-2. **Register with Farcaster**
-   - Submit action for review via Warpcast developer tools
-   - Test in development environment first
-   - Deploy to production after approval
+3. **Validation Process**
+   - Warpcast will validate your action endpoint
+   - It will check for proper response format
+   - Verify modal functionality works correctly
 
-#### Step 5: Testing & Optimization
+4. **Testing in Production**
+   - Once approved, the action will appear under casts
+   - Test with various cast types
+   - Monitor analytics for usage
 
-1. **Test Different Cast Types**
-   - Regular text casts
-   - Casts with images
-   - Casts with embeds
-   - Thread replies
-   - Long-form content
+#### 3. Post-Registration Tasks
+- [ ] Monitor error logs for any issues
+- [ ] Track usage analytics
+- [ ] Gather user feedback
+- [ ] Consider A/B testing different modal layouts
 
-2. **Performance Optimization**
-   - Pre-load preview images
-   - Cache cast data where possible
-   - Optimize modal load time
+### Implementation Details
 
-3. **Error Handling**
-   - Handle network failures gracefully
-   - Provide fallback for missing cast data
-   - Clear error messages for users
+The current implementation provides:
 
-### Benefits of Modal Action Approach
+1. **Copy Farlinker link** - Enhanced preview with images (similar to Twitter link preview)
+2. **Copy standard link** - Clean text preview (similar to website link preview)
 
-1. **Single Entry Point**: One action button provides all options
-2. **Visual Guidance**: Preview images help users understand each format
-3. **Flexibility**: Users can choose share or copy for each format
-4. **Educational**: Shows the difference between preview types
-5. **Clean UX**: Doesn't clutter the action bar with multiple buttons
+Each option shows a preview image demonstrating how the link will appear when shared.
+
+### Technical Architecture
+
+#### Action Flow
+1. User clicks Farlinker action button on a cast
+2. Farcaster sends POST request to `/api/actions/farlinker` with cast data
+3. Action endpoint returns modal response
+4. Modal opens at `/actions/modal` with cast ID parameters
+5. Modal fetches cast details via `/api/cast-details`
+6. User selects copy option
+7. Link is copied to clipboard and feedback is shown
+
+#### Key Components
+- **Action Endpoint**: Handles Farcaster requests and returns modal configuration
+- **Modal Interface**: Displays copy options with visual previews
+- **Cast Details API**: Fetches cast metadata from Neynar
+- **Clipboard Integration**: Dual approach for Farcaster and testing environments
+
+### Action Configuration
+
+The action is configured in `/public/.well-known/farcaster.json`:
+
+```json
+{
+  "actions": [
+    {
+      "name": "Farlinker",
+      "icon": "link",
+      "description": "Generate shareable preview links",
+      "aboutUrl": "https://farlinker.xyz",
+      "action": {
+        "type": "post",
+        "url": "https://farlinker.xyz/api/actions/farlinker"
+      }
+    }
+  ]
+}
+```
+
+### Known Issues & Solutions
+
+1. **Clipboard in Test Environment**
+   - The modal uses both direct clipboard API and postMessage
+   - This ensures it works in both local testing and Farcaster
+
+2. **User Fallback**
+   - When cast data can't be fetched, username defaults to "user"
+   - This is only seen in testing with invalid hashes
+
+3. **SearchParams in Next.js 15**
+   - SearchParams are now Promises and must be awaited
+   - Modal properly handles this with useEffect
 
 ---
 
