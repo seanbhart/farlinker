@@ -25,22 +25,44 @@ export async function GET(request: NextRequest) {
 
     // Calculate dynamic height based on text length
     // More accurate calculation based on average character width
-    const avgCharWidth = 16; // Average character width in pixels for 28px font
+    const avgCharWidth = 11; // More accurate average for 28px font
     const containerWidth = 520; // 600px - 80px padding
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
-    const lineHeight = 40;
-    const topBottomPadding = 60; // 30px top + 30px bottom
-    const headerHeight = 80; // profile section height including margin
-    const minHeight = 315;
+    const lineHeight = 36;
+    const topPadding = 25;
+    const bottomPadding = 15;
+    const headerHeight = 60; // profile section height
+    const headerMarginTop = 15;
+    const minHeight = 160; // Even smaller minimum for very short text
     const maxHeight = 800;
     
-    // Estimate number of lines (add extra line for word wrapping safety)
-    const estimatedLines = Math.ceil(text.length / charsPerLine) + 1;
-    const textHeight = estimatedLines * lineHeight;
-    const calculatedHeight = topBottomPadding + textHeight + headerHeight;
+    // Estimate number of lines more accurately
+    const words = text.split(' ');
+    let currentLineLength = 0;
+    let lines = 1;
+    
+    for (const word of words) {
+      const wordLength = word.length + 1; // +1 for space
+      if (currentLineLength + wordLength > charsPerLine && currentLineLength > 0) {
+        lines++;
+        currentLineLength = wordLength;
+      } else {
+        currentLineLength += wordLength;
+      }
+    }
+    
+    // Don't add extra line for short text
+    if (text.length > charsPerLine * 2) {
+      lines += 0.5; // Add half line for word wrapping safety on longer text
+    }
+    
+    const textHeight = Math.ceil(lines) * lineHeight;
+    const calculatedHeight = topPadding + textHeight + headerMarginTop + headerHeight + bottomPadding;
     
     // Use calculated height with min/max constraints
     const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
+    
+    console.log(`[OG-Post] Text: "${text}", Lines: ${lines}, Calculated height: ${calculatedHeight}, Final height: ${dynamicHeight}`);
 
     const response = new ImageResponse(
       (
@@ -51,22 +73,22 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            padding: '30px 40px',
+            padding: '25px 40px 15px 40px',
           }}
         >
           {/* Post text */}
           <div
             style={{
               fontSize: 28,
-              lineHeight: '40px',
+              lineHeight: '36px',
               fontWeight: 400,
               color: 'white',
-              flex: 1,
               overflow: 'hidden',
               display: 'block',
+              marginBottom: 'auto',
             }}
           >
-            {postText}
+            {text}
           </div>
 
           {/* User header */}
@@ -74,7 +96,7 @@ export async function GET(request: NextRequest) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              marginTop: '20px',
+              marginTop: '15px',
             }}
           >
             {/* Profile picture */}
