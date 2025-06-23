@@ -67,7 +67,8 @@ export async function GET(request: NextRequest) {
     
     const textHeight = Math.ceil(lines) * lineHeight;
     const textTopPadding = embeddedImage ? 25 : topPadding; // Add padding after image
-    const calculatedHeight = embeddedImageHeight + textTopPadding + textHeight + headerMarginTop + headerHeight + bottomPadding;
+    const headerBottomMargin = 10; // Additional margin on username div
+    const calculatedHeight = embeddedImageHeight + textTopPadding + textHeight + headerMarginTop + headerHeight + headerBottomMargin + bottomPadding;
     
     // Use calculated height with min/max constraints
     const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
