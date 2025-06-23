@@ -34,6 +34,7 @@ export function middleware(request: NextRequest) {
     pathname.endsWith('.gif') ||
     pathname.endsWith('.webp') ||
     pathname.endsWith('.svg') ||
+    pathname === '/farlinker.png' ||
     pathname === '/fc.png' ||
     pathname === '/fc.webp'
   ) {

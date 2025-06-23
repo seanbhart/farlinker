@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/fc.png', type: 'image/png' }
+      { url: '/farlinker.png', type: 'image/png' }
     ],
-    apple: '/fc.png',
+    apple: '/farlinker.png',
     other: [
       {
         rel: 'icon',
-        url: '/fc.png',
+        url: '/farlinker.png',
       },
     ],
   },
