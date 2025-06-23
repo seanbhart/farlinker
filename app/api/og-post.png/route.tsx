@@ -34,14 +34,14 @@ export async function GET(request: NextRequest) {
 
     // Calculate dynamic height based on text length
     // More accurate calculation based on average character width
-    const avgCharWidth = 11; // More accurate average for 28px font
+    const avgCharWidth = 12; // Average for 32px font
     const containerWidth = 520; // 600px - 80px padding
     const charsPerLine = Math.floor(containerWidth / avgCharWidth);
-    const lineHeight = 36;
+    const lineHeight = 42;
     const topPadding = 25;
-    const bottomPadding = 15;
+    const bottomPadding = 25; // Increased bottom padding
     const headerHeight = 60; // profile section height
-    const headerMarginTop = 15;
+    const headerMarginTop = 25; // Increased from 15
     const minHeight = 160; // Even smaller minimum for very short text
     const maxHeight = 800;
     
@@ -66,8 +66,8 @@ export async function GET(request: NextRequest) {
     }
     
     const textHeight = Math.ceil(lines) * lineHeight;
-    const imageMargin = embeddedImage ? 15 : 0; // Space between image and text
-    const calculatedHeight = topPadding + embeddedImageHeight + imageMargin + textHeight + headerMarginTop + headerHeight + bottomPadding;
+    const textTopPadding = embeddedImage ? 25 : topPadding; // Add padding after image
+    const calculatedHeight = embeddedImageHeight + textTopPadding + textHeight + headerMarginTop + headerHeight + bottomPadding;
     
     // Use calculated height with min/max constraints
     const dynamicHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            padding: '25px 40px 15px 40px',
+            padding: embeddedImage ? '0' : '25px 40px 15px 40px',
           }}
         >
           {/* Embedded image if present */}
@@ -92,40 +92,48 @@ export async function GET(request: NextRequest) {
               {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
               <img
                 src={embeddedImage}
-                width={520}
+                width={600}
                 height={embeddedImageHeight}
                 style={{
-                  borderRadius: '12px',
                   objectFit: 'cover',
-                  marginBottom: '15px',
                 }}
               />
             </>
           )}
           
-          {/* Post text */}
-          <div
-            style={{
-              fontSize: 28,
-              lineHeight: '36px',
-              fontWeight: 400,
-              color: 'white',
-              overflow: 'hidden',
-              display: 'block',
-              marginBottom: 'auto',
-            }}
-          >
-            {text}
-          </div>
-
-          {/* User header */}
+          {/* Content wrapper for padding when image is present */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              marginTop: '15px',
+              flexDirection: 'column',
+              padding: embeddedImage ? '25px 40px 25px 40px' : '0',
+              flex: 1,
             }}
           >
+            {/* Post text */}
+            <div
+              style={{
+                fontSize: 32,
+                lineHeight: '42px',
+                fontWeight: 400,
+                color: 'white',
+                overflow: 'hidden',
+                display: 'block',
+                marginBottom: 'auto',
+              }}
+            >
+              {text}
+            </div>
+
+            {/* User header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginTop: '25px',
+                marginBottom: '10px',
+              }}
+            >
             {/* Profile picture */}
             {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
             <img
@@ -168,6 +176,7 @@ export async function GET(request: NextRequest) {
                 farcaster.xyz
               </div>
             </div>
+          </div>
           </div>
         </div>
       ),
