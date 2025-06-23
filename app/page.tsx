@@ -1,6 +1,25 @@
+'use client';
+
 import Image from 'next/image';
 
 export default function Home() {
+  const shareViaMessages = (url: string) => {
+    // Use native share API if available (mobile)
+    if (navigator.share) {
+      navigator.share({
+        text: url,
+      }).catch(() => {
+        // Fallback to SMS on mobile if share fails
+        window.location.href = `sms:?body=${encodeURIComponent(url)}`;
+      });
+    } else {
+      // Desktop fallback - copy to clipboard
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied to clipboard! Paste it in your messaging app.');
+      });
+    }
+  };
+
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#17101f' }}>
       <div className="container mx-auto px-4 py-16">
@@ -47,32 +66,38 @@ export default function Home() {
                 <span className="text-gray-300">farcaster.xyz/dwr.eth/0xce8c7b65</span>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
-                <span className="text-gray-500">Farlinker format:</span>
-                <br />
-                <a 
-                  href="https://farlinker.xyz/dwr.eth/0xce8c7b65" 
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  farlinker.xyz/dwr.eth/0xce8c7b65
-                </a>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-gray-500">Farlinker format:</span>
+                    <br />
+                    <span className="text-gray-300">farlinker.xyz/dwr.eth/0xce8c7b65</span>
+                  </div>
+                  <button
+                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65')}
+                    className="ml-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                  >
+                    Share
+                  </button>
+                </div>
               </div>
               <div className="font-mono text-sm bg-black/40 p-4 rounded border border-gray-800">
-                <span className="text-gray-500">Farlinker standard open graph format:</span>
-                <br />
-                <a 
-                  href="https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard" 
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard
-                </a>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-gray-500">Farlinker standard open graph format:</span>
+                    <br />
+                    <span className="text-gray-300">farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard</span>
+                  </div>
+                  <button
+                    onClick={() => shareViaMessages('https://farlinker.xyz/dwr.eth/0xce8c7b65?preview=standard')}
+                    className="ml-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+                  >
+                    Share
+                  </button>
+                </div>
               </div>
             </div>
             <p className="text-gray-500 text-sm mt-4">
-              Try sharing the Farlinker URLs above to see them in action.
+              Tap the Share buttons to send these examples via your messaging app
             </p>
           </div>
           
@@ -108,7 +133,7 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-3">Standard preview (with ?preview=standard):</p>
+                <p className="text-gray-400 text-sm mb-3">Farlinker with standard open graph format (with ?preview=standard):</p>
                 <div className="relative w-full max-w-md mx-auto bg-black p-4 rounded-lg">
                   <Image 
                     src="/apple_messages_farlinker_standard.png" 
