@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
   <meta property="fc:frame" content="vNext" />
   <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
   <meta property="fc:frame:button:1:action" content="link" />
   <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
-  <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2" content="Copy Open Graph Link" />
   <meta property="fc:frame:button:2:action" content="link" />
   <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
   <meta property="fc:frame" content="vNext" />
   <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
   <meta property="fc:frame:button:1:action" content="link" />
   <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
-  <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2" content="Copy Open Graph Link" />
   <meta property="fc:frame:button:2:action" content="link" />
   <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
@@ -93,10 +93,10 @@ export async function POST(request: NextRequest) {
   <meta property="fc:frame" content="vNext" />
   <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
   <meta property="fc:frame:button:1:action" content="link" />
   <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
-  <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2" content="Copy Open Graph Link" />
   <meta property="fc:frame:button:2:action" content="link" />
   <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
