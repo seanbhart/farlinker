@@ -124,11 +124,11 @@ The action is configured in `/public/.well-known/farcaster.json`:
 Once deployed, users can add the Farlinker action button to their Farcaster client using this deep link:
 
 ```
-https://farcaster.xyz/~/add-cast-action?url=https://farlinker.xyz/api/actions/farlinker
+https://warpcast.com/~/add-cast-action?url=https%3A%2F%2Fwww.farlinker.xyz%2Fapi%2Factions%2Ffarlinker
 ```
 
 Or they can manually add it by going to Settings → Actions and entering:
-- **Action URL**: `https://farlinker.xyz/api/actions/farlinker`
+- **Action URL**: `https://www.farlinker.xyz/api/actions/farlinker`
 
 ### Known Issues & Solutions
 
