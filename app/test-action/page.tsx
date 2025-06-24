@@ -130,8 +130,9 @@ export default function TestAction() {
             <ol className="text-gray-300 space-y-2 list-decimal list-inside">
               <li>Click &quot;Test Action Endpoint&quot; to simulate a Farcaster action request</li>
               <li>Check the response - it should return a frame type with a frameUrl</li>
-              <li>Click &quot;Open Modal in New Tab&quot; to test the modal interface</li>
-              <li>The modal should show 2 options for copying links</li>
+              <li>Click &quot;Open Modal in New Tab&quot; to test the frame</li>
+              <li>The frame should show 2 buttons for choosing link format</li>
+              <li>Clicking a button will show the generated URL in a text input for copying</li>
               <li>Test the metadata endpoint to ensure it returns proper action configuration</li>
             </ol>
           </div>

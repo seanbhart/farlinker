@@ -1,164 +1,11 @@
 import { NextRequest } from 'next/server';
-import { ImageResponse } from 'next/og';
 import { fetchCastByIdentifier } from '@/lib/neynar';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
-  // Get the host for absolute image URLs
-  const host = request.headers.get('host') || 'www.farlinker.xyz';
-  const protocol = host.includes('localhost') ? 'http' : 'https';
-  const baseUrl = `${protocol}://${host}`;
-  
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          background: '#17101f',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'sans-serif',
-          padding: '40px',
-        }}
-      >
-        <div
-          style={{
-            fontSize: 36,
-            fontWeight: 'bold',
-            color: '#fff',
-            marginBottom: 30,
-          }}
-        >
-          Choose your link format
-        </div>
-        
-        <div
-          style={{
-            display: 'flex',
-            gap: 50,
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Enhanced Preview Example */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 15,
-            }}
-          >
-            <div
-              style={{
-                width: 480,
-                height: 320,
-                background: '#000',
-                borderRadius: 16,
-                overflow: 'hidden',
-                border: '3px solid #2d2b35',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              }}
-            >
-              <img 
-                src={`${baseUrl}/apple_messages_farlinker.png`}
-                width={480}
-                height={320}
-                style={{
-                  objectFit: 'contain',
-                }}
-                alt="Enhanced preview example"
-              />
-            </div>
-            <div
-              style={{
-                fontSize: 20,
-                color: '#fff',
-                textAlign: 'center',
-                fontWeight: '600',
-              }}
-            >
-              Enhanced Preview
-            </div>
-            <div
-              style={{
-                fontSize: 16,
-                color: '#9ca3af',
-                textAlign: 'center',
-              }}
-            >
-              Similar to Twitter previews
-            </div>
-          </div>
-          
-          {/* Standard Preview Example */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 15,
-            }}
-          >
-            <div
-              style={{
-                width: 480,
-                height: 320,
-                background: '#000',
-                borderRadius: 16,
-                overflow: 'hidden',
-                border: '3px solid #2d2b35',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              }}
-            >
-              <img 
-                src={`${baseUrl}/apple_messages_farlinker_standard.png`}
-                width={480}
-                height={320}
-                style={{
-                  objectFit: 'contain',
-                }}
-                alt="Standard preview example"
-              />
-            </div>
-            <div
-              style={{
-                fontSize: 20,
-                color: '#fff',
-                textAlign: 'center',
-                fontWeight: '600',
-              }}
-            >
-              Standard Preview
-            </div>
-            <div
-              style={{
-                fontSize: 16,
-                color: '#9ca3af',
-                textAlign: 'center',
-              }}
-            >
-              Similar to website previews
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-    {
-      width: 1200,
-      height: 630,
-    }
-  );
+export async function GET() {
+  // This is not used anymore - we'll use the static image
+  return new Response('Not needed', { status: 404 });
 }
 
 export async function POST(request: NextRequest) {
@@ -183,12 +30,12 @@ export async function POST(request: NextRequest) {
 <html>
 <head>
   <meta property="fc:frame" content="vNext" />
-  <meta property="fc:frame:image" content="${baseUrl}/api/actions/frame?castId=${castId}" />
+  <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
+  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
   <meta property="fc:frame:button:2" content="Copy Standard Link" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
-  <meta property="og:image" content="${baseUrl}/api/actions/frame?castId=${castId}" />
+  <meta property="og:image" content="${baseUrl}/farlinker-options.png" />
 </head>
 <body></body>
 </html>`;
@@ -205,21 +52,23 @@ export async function POST(request: NextRequest) {
     const cast = await fetchCastByIdentifier(formattedHash);
     
     const authorUsername = cast?.author?.username || 'user';
+    // Button 1 = standard farlinker, button 2 = with ?preview=standard
     const isStandard = buttonIndex === 2;
     const farlinkerUrl = `${baseUrl}/${authorUsername}/${formattedHash}${isStandard ? '?preview=standard' : ''}`;
-    const message = isStandard ? 'Standard link ready!' : 'Enhanced link ready!';
+    const linkType = isStandard ? 'Standard' : 'Farlinker';
     
-    // Return a success frame with the link
+    // Return frame with the URL displayed and a button to open it
     const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta property="fc:frame" content="vNext" />
-  <meta property="fc:frame:image" content="${baseUrl}/api/actions/success?message=${encodeURIComponent(message)}&url=${encodeURIComponent(farlinkerUrl)}" />
+  <meta property="fc:frame:image" content="${baseUrl}/api/actions/success?message=${encodeURIComponent(`${linkType} link ready!`)}&url=${encodeURIComponent(farlinkerUrl)}" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
+  <meta property="fc:frame:input:text" content="${farlinkerUrl}" />
   <meta property="fc:frame:button:1" content="Open Link" />
   <meta property="fc:frame:button:1:action" content="link" />
   <meta property="fc:frame:button:1:target" content="${farlinkerUrl}" />
-  <meta property="og:title" content="${message}" />
+  <meta property="og:title" content="${linkType} link ready!" />
 </head>
 <body></body>
 </html>`;

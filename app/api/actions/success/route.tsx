@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
             marginTop: 40,
           }}
         >
-          Click &quot;Open Link&quot; to visit
+          Copy the link from the text box below
         </div>
       </div>
     ),
