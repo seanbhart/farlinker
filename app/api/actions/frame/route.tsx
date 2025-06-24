@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
       >
         <div
           style={{
-            fontSize: 40,
+            fontSize: 36,
             fontWeight: 'bold',
             color: '#fff',
-            marginBottom: 20,
+            marginBottom: 30,
           }}
         >
           Choose your link format
@@ -38,9 +38,9 @@ export async function GET(request: NextRequest) {
         <div
           style={{
             display: 'flex',
-            gap: 40,
-            alignItems: 'center',
-            marginBottom: 20,
+            gap: 50,
+            alignItems: 'flex-start',
+            justifyContent: 'center',
           }}
         >
           {/* Enhanced Preview Example */}
@@ -49,44 +49,47 @@ export async function GET(request: NextRequest) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 10,
+              gap: 15,
             }}
           >
             <div
               style={{
-                width: 400,
-                height: 240,
+                width: 480,
+                height: 320,
                 background: '#000',
-                borderRadius: 12,
+                borderRadius: 16,
                 overflow: 'hidden',
-                border: '2px solid #2d2b35',
+                border: '3px solid #2d2b35',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
               }}
             >
               <img 
                 src={`${baseUrl}/apple_messages_farlinker.png`}
-                width={400}
-                height={240}
+                width={480}
+                height={320}
                 style={{
                   objectFit: 'contain',
                 }}
+                alt="Enhanced preview example"
               />
             </div>
             <div
               style={{
-                fontSize: 16,
-                color: '#9ca3af',
+                fontSize: 20,
+                color: '#fff',
                 textAlign: 'center',
+                fontWeight: '600',
               }}
             >
               Enhanced Preview
             </div>
             <div
               style={{
-                fontSize: 14,
-                color: '#6b7280',
+                fontSize: 16,
+                color: '#9ca3af',
                 textAlign: 'center',
               }}
             >
@@ -100,44 +103,47 @@ export async function GET(request: NextRequest) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 10,
+              gap: 15,
             }}
           >
             <div
               style={{
-                width: 400,
-                height: 240,
+                width: 480,
+                height: 320,
                 background: '#000',
-                borderRadius: 12,
+                borderRadius: 16,
                 overflow: 'hidden',
-                border: '2px solid #2d2b35',
+                border: '3px solid #2d2b35',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
               }}
             >
               <img 
                 src={`${baseUrl}/apple_messages_farlinker_standard.png`}
-                width={400}
-                height={240}
+                width={480}
+                height={320}
                 style={{
                   objectFit: 'contain',
                 }}
+                alt="Standard preview example"
               />
             </div>
             <div
               style={{
-                fontSize: 16,
-                color: '#9ca3af',
+                fontSize: 20,
+                color: '#fff',
                 textAlign: 'center',
+                fontWeight: '600',
               }}
             >
               Standard Preview
             </div>
             <div
               style={{
-                fontSize: 14,
-                color: '#6b7280',
+                fontSize: 16,
+                color: '#9ca3af',
                 textAlign: 'center',
               }}
             >
@@ -175,9 +181,13 @@ export async function POST(request: NextRequest) {
 <head>
   <meta property="fc:frame" content="vNext" />
   <meta property="fc:frame:image" content="${baseUrl}/api/actions/frame?castId=${castId}&fid=${fid}" />
+  <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
   <meta property="fc:frame:button:1" content="Copy Enhanced Link" />
+  <meta property="fc:frame:button:1:action" content="post" />
   <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2:action" content="post" />
   <meta property="fc:frame:post_url" content="${baseUrl}/api/actions/process?castId=${castId}&fid=${fid}" />
+  <meta property="fc:frame:image:tap_action" content="post" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
   <meta property="og:image" content="${baseUrl}/api/actions/frame?castId=${castId}&fid=${fid}" />
 </head>
