@@ -8,6 +8,11 @@ export async function GET(request: NextRequest) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
   
+  // Get cast ID from URL params
+  const { searchParams } = new URL(request.url);
+  const castId = searchParams.get('castId') || '';
+  const formattedHash = castId.startsWith('0x') ? castId : `0x${castId}`;
+  
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +20,11 @@ export async function GET(request: NextRequest) {
   <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
   <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:1:action" content="link" />
+  <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
   <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2:action" content="link" />
+  <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
   <meta property="og:image" content="${baseUrl}/farlinker-options.png" />
 </head>
@@ -46,7 +55,9 @@ export async function POST(request: NextRequest) {
     
     // If this is the initial frame load (no button clicked yet)
     if (!buttonIndex || buttonIndex === 0) {
-      // Return the initial frame with two buttons
+      // Return the initial frame with two buttons that link directly to copy pages
+      const formattedHash = castId.startsWith('0x') ? castId : `0x${castId}`;
+      
       const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +65,11 @@ export async function POST(request: NextRequest) {
   <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
   <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:1:action" content="link" />
+  <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
   <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2:action" content="link" />
+  <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
   <meta property="og:title" content="Farlinker - Choose Link Format" />
   <meta property="og:image" content="${baseUrl}/farlinker-options.png" />
 </head>
@@ -68,32 +83,26 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Handle button clicks
+    // Since we're using link buttons, we shouldn't get button clicks
+    // Just return the same frame
     const formattedHash = castId.startsWith('0x') ? castId : `0x${castId}`;
     
-    // Button 1 = enhanced farlinker, button 2 = standard
-    const isStandard = buttonIndex === 2;
-    const previewType = isStandard ? 'standard' : 'enhanced';
-    
-    // Generate the copy page URL
-    const copyPageUrl = `${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=${previewType}`;
-    
-    // Return frame that auto-opens the link
     const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta property="fc:frame" content="vNext" />
-  <meta property="fc:frame:image" content="${baseUrl}/api/actions/copy-text?type=${previewType}" />
+  <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:button:1" content="Open Link" />
+  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
   <meta property="fc:frame:button:1:action" content="link" />
-  <meta property="fc:frame:button:1:target" content="${copyPageUrl}" />
-  <meta property="og:title" content="${isStandard ? 'Standard' : 'Farlinker'} Link Ready" />
-  <meta http-equiv="refresh" content="0; url=${copyPageUrl}" />
+  <meta property="fc:frame:button:1:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=enhanced" />
+  <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="fc:frame:button:2:action" content="link" />
+  <meta property="fc:frame:button:2:target" content="${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=standard" />
+  <meta property="og:title" content="Farlinker - Choose Link Format" />
+  <meta property="og:image" content="${baseUrl}/farlinker-options.png" />
 </head>
-<body>
-  <script>window.location.href = "${copyPageUrl}";</script>
-</body>
+<body></body>
 </html>`;
     
     return new Response(html, {
