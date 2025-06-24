@@ -38,9 +38,18 @@ export default function TestFrame() {
           body: JSON.stringify(actionData),
         });
         
-        const html = await res.text();
-        setFrameUrl('/api/actions/farlinker');
-        setFrameHtml(html);
+        const responseJson = await res.json();
+        console.log('Action response:', responseJson);
+        
+        // Now fetch the frame URL
+        if (responseJson.type === 'frame' && responseJson.frameUrl) {
+          const frameRes = await fetch(responseJson.frameUrl);
+          const frameHtml = await frameRes.text();
+          setFrameUrl(responseJson.frameUrl);
+          setFrameHtml(frameHtml);
+        } else {
+          setFrameHtml('Invalid action response');
+        }
         setButtonIndex(0);
       } else {
         // Test the frame directly
