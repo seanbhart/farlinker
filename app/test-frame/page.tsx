@@ -7,21 +7,51 @@ export default function TestFrame() {
   const [frameHtml, setFrameHtml] = useState('');
   const [loading, setLoading] = useState(false);
   const [buttonIndex, setButtonIndex] = useState(0);
-  const [castId, setCastId] = useState('0x324ceda2');
+  const [castHash, setCastHash] = useState('0x324ceda2c96209aa6be69b58be65836a1ff68142');
   const [fid, setFid] = useState('4612');
-  const [username, setUsername] = useState('swabbie.eth');
+  const [testingAction, setTestingAction] = useState(true);
   
   // Load frame (simulates GET request)
   const loadFrame = async () => {
     setLoading(true);
     try {
-      const url = `/api/actions/frame?castId=${castId}&fid=${fid}&username=${encodeURIComponent(username)}`;
-      setFrameUrl(url);
-      
-      const res = await fetch(url);
-      const html = await res.text();
-      setFrameHtml(html);
-      setButtonIndex(0);
+      if (testingAction) {
+        // Test the action endpoint
+        const actionData = {
+          untrustedData: {
+            fid: fid,
+            castId: {
+              fid: fid,
+              hash: castHash
+            },
+            messageHash: '0x00',
+            network: 1,
+            timestamp: Date.now()
+          }
+        };
+        
+        const res = await fetch('/api/actions/farlinker', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(actionData),
+        });
+        
+        const html = await res.text();
+        setFrameUrl('/api/actions/farlinker');
+        setFrameHtml(html);
+        setButtonIndex(0);
+      } else {
+        // Test the frame directly
+        const url = `/api/actions/frame?castId=${castHash}`;
+        setFrameUrl(url);
+        
+        const res = await fetch(url);
+        const html = await res.text();
+        setFrameHtml(html);
+        setButtonIndex(0);
+      }
     } catch (error) {
       console.error('Error loading frame:', error);
       setFrameHtml('Error loading frame');
@@ -34,24 +64,24 @@ export default function TestFrame() {
   const simulateButtonClick = async (index: number) => {
     setLoading(true);
     try {
-      const url = `/api/actions/frame?castId=${castId}&fid=${fid}&username=${encodeURIComponent(username)}`;
+      const postUrl = metadata['fc:frame:post_url'] || `/api/actions/frame?castId=${castHash}`;
       
       const mockData = {
         untrustedData: {
           fid: fid,
-          url: `https://www.farlinker.xyz${url}`,
+          url: `https://www.farlinker.xyz${postUrl}`,
           messageHash: '0x00',
           timestamp: Date.now(),
           network: 1,
           buttonIndex: index,
           castId: {
             fid: fid,
-            hash: castId
+            hash: castHash
           }
         }
       };
       
-      const res = await fetch(url, {
+      const res = await fetch(postUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,12 +140,38 @@ export default function TestFrame() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Cast ID (Hash)
+                    Test Mode
+                  </label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center text-gray-300">
+                      <input
+                        type="radio"
+                        checked={testingAction}
+                        onChange={() => setTestingAction(true)}
+                        className="mr-2"
+                      />
+                      Action Endpoint
+                    </label>
+                    <label className="flex items-center text-gray-300">
+                      <input
+                        type="radio"
+                        checked={!testingAction}
+                        onChange={() => setTestingAction(false)}
+                        className="mr-2"
+                      />
+                      Frame Direct
+                    </label>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Cast Hash
                   </label>
                   <input
                     type="text"
-                    value={castId}
-                    onChange={(e) => setCastId(e.target.value)}
+                    value={castHash}
+                    onChange={(e) => setCastHash(e.target.value)}
                     className="w-full px-3 py-2 bg-gray-800 text-white rounded-lg border border-gray-700"
                     placeholder="0x..."
                   />
@@ -134,18 +190,6 @@ export default function TestFrame() {
                   />
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Username (for testing)
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-800 text-white rounded-lg border border-gray-700"
-                    placeholder="swabbie.eth"
-                  />
-                </div>
                 
                 <button
                   onClick={loadFrame}

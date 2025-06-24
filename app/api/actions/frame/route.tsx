@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     const previewType = isStandard ? 'standard' : 'enhanced';
     
     // Generate the copy page URL
-    const copyPageUrl = `${baseUrl}/actions/copy?castId=${formattedHash}&type=${previewType}&username=${authorUsername}`;
+    const copyPageUrl = `${baseUrl}/actions/copy-v2?castId=${formattedHash}&type=${previewType}`;
     
     // Return frame that auto-opens the link
     const html = `<!DOCTYPE html>

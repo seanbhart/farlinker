@@ -119,6 +119,17 @@ The action is configured in `/public/.well-known/farcaster.json`:
 }
 ```
 
+### Adding the Action Button
+
+Once deployed, users can add the Farlinker action button to their Farcaster client using this deep link:
+
+```
+https://farcaster.xyz/~/add-cast-action?url=https://farlinker.xyz/api/actions/farlinker
+```
+
+Or they can manually add it by going to Settings → Actions and entering:
+- **Action URL**: `https://farlinker.xyz/api/actions/farlinker`
+
 ### Known Issues & Solutions
 
 1. **Clipboard in Test Environment**
@@ -132,6 +143,11 @@ The action is configured in `/public/.well-known/farcaster.json`:
 3. **SearchParams in Next.js 15**
    - SearchParams are now Promises and must be awaited
    - Modal properly handles this with useEffect
+
+4. **Embedded Images**
+   - The action properly handles casts with embedded images
+   - Images are displayed in both preview formats
+   - Standard format uses embedded image as main preview when available
 
 ---
 
