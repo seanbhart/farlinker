@@ -19,31 +19,6 @@ interface CastData {
   username?: string;
 }
 
-async function fetchCastDetails(castData: CastData) {
-  try {
-    const response = await fetch('/api/cast-details', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hash: castData.castId })
-    });
-    
-    if (!response.ok) throw new Error('Failed to fetch cast details');
-    
-    const data = await response.json();
-    console.log('Cast details response:', data);
-    return {
-      authorUsername: data.authorUsername || 'user',
-      hash: data.hash || castData.castId
-    };
-  } catch (error) {
-    console.error('Error fetching cast details:', error);
-    // Return fallback data
-    return {
-      authorUsername: 'user',
-      hash: castData.castId
-    };
-  }
-}
 
 function OptionCard({ option, castData }: { option: OptionType; castData: CastData }) {
   const [loading, setLoading] = useState(false);

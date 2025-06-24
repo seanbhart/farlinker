@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function TestModal() {
   const [modalUrl, setModalUrl] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<{ time: string; data: { type: string; data?: { action?: string; url?: string } } }[]>([]);
   const [castHash, setCastHash] = useState('0x324ceda2c96209aa6be69b58be65836a1ff68142');
   const [fid, setFid] = useState('4612');
   
@@ -146,7 +146,7 @@ export default function TestModal() {
               />
             ) : (
               <div className="w-full h-[600px] rounded-lg border border-gray-700 bg-gray-800 flex items-center justify-center">
-                <p className="text-gray-500">Click "Test Farlinker Action" to load modal</p>
+                <p className="text-gray-500">Click &quot;Test Farlinker Action&quot; to load modal</p>
               </div>
             )}
           </div>
@@ -157,7 +157,7 @@ export default function TestModal() {
           <h3 className="text-lg font-semibold text-white mb-3">How This Works</h3>
           <ol className="text-gray-300 space-y-2 list-decimal list-inside">
             <li>Enter a Cast Hash and FID to test with</li>
-            <li>Click "Test Farlinker Action" to simulate the action being triggered</li>
+            <li>Click &quot;Test Farlinker Action&quot; to simulate the action being triggered</li>
             <li>The modal will load in the preview iframe</li>
             <li>Click one of the options in the modal</li>
             <li>The modal will send a message requesting to open the copy page</li>

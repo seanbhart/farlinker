@@ -8,7 +8,17 @@ function CopyPageContent() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string>('');
   const [copied, setCopied] = useState(false);
-  const [castData, setCastData] = useState<any>(null);
+  const [castData, setCastData] = useState<{
+    authorUsername: string;
+    hash: string;
+    text?: string;
+    author?: {
+      username: string;
+      display_name?: string;
+      pfp_url: string;
+    };
+    embeds?: Array<{ url?: string; metadata?: { image?: { width_px: number; height_px: number } } }>;
+  } | null>(null);
   const [embedImage, setEmbedImage] = useState<string | null>(null);
   
   // Get params from URL

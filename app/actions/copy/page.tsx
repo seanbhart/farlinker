@@ -22,7 +22,7 @@ function CopyPageContent() {
   const type = searchParams.get('type') || 'enhanced';
   const isStandard = type === 'standard';
   const urlUsername = searchParams.get('username') || '';
-  const [actualUsername, setActualUsername] = useState(urlUsername);
+  const actualUsername = urlUsername;
   
   console.log('Copy page params:', { castId, type, isStandard, urlUsername });
   

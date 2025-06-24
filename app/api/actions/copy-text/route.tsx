@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
             fontWeight: 'bold',
           }}
         >
-          Click "View Link" to see your link
+          Click &quot;View Link&quot; to see your link
         </div>
       </div>
     ),
