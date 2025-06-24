@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     name: 'Farlinker',
-    icon: 'link-45deg',
+    icon: 'link-external',
     description: 'Create enhanced link previews',
     aboutUrl: 'https://www.farlinker.xyz',
     action: {
