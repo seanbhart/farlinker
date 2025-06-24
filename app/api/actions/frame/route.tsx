@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import { fetchCastByIdentifier } from '@/lib/neynar';
 
 export const runtime = 'edge';
 
@@ -69,11 +68,9 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Handle button clicks - fetch cast details and redirect
+    // Handle button clicks
     const formattedHash = castId.startsWith('0x') ? castId : `0x${castId}`;
-    const cast = await fetchCastByIdentifier(formattedHash);
     
-    const authorUsername = cast?.author?.username || 'user';
     // Button 1 = enhanced farlinker, button 2 = standard
     const isStandard = buttonIndex === 2;
     const previewType = isStandard ? 'standard' : 'enhanced';
