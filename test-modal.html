@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Farlinker Modal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .modal-frame {
+            width: 100%;
+            max-width: 400px;
+            height: 600px;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            border: 1px solid #4caf50;
+            display: none;
+        }
+        .result.error {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Farlinker Modal</h1>
+        
+        <div class="test-section">
+            <h2>1. Test Action Endpoint</h2>
+            <p>This simulates what happens when a user clicks the Farlinker action on a cast.</p>
+            
+            <div class="input-group">
+                <label>Cast Hash:</label>
+                <input type="text" id="castHash" value="0xce8c7b65">
+            </div>
+            
+            <div class="input-group">
+                <label>FID (User ID):</label>
+                <input type="text" id="fid" value="3621">
+            </div>
+            
+            <button onclick="testAction()">Test Action Endpoint</button>
+            
+            <div id="actionResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Test Modal Directly</h2>
+            <p>Load the modal in an iframe to test the UI and interactions.</p>
+            
+            <button onclick="loadModal()">Load Modal in Frame</button>
+            <button onclick="openModalNewTab()">Open Modal in New Tab</button>
+            
+            <iframe id="modalFrame" class="modal-frame" style="display: none;"></iframe>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Monitor Modal Messages</h2>
+            <p>This section will show any messages received from the modal (simulating Farcaster's behavior).</p>
+            
+            <div id="messageLog" style="background: #f0f0f0; padding: 10px; border-radius: 4px; min-height: 100px; font-family: monospace; font-size: 12px;">
+                Waiting for messages...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Listen for messages from the modal
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'fc:action') {
+                const log = document.getElementById('messageLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const message = `[${timestamp}] Received: ${JSON.stringify(event.data, null, 2)}\n\n`;
+                
+                if (log.textContent === 'Waiting for messages...') {
+                    log.textContent = message;
+                } else {
+                    log.textContent += message;
+                }
+                
+                // Handle the action
+                if (event.data.data && event.data.data.action === 'link' && event.data.data.url) {
+                    console.log('Modal requested to open URL:', event.data.data.url);
+                    // In Farcaster, this would open the URL
+                    // For testing, we'll log it and optionally open it
+                    if (confirm(`Modal wants to open: ${event.data.data.url}\n\nOpen in new tab?`)) {
+                        window.open(event.data.data.url, '_blank');
+                    }
+                }
+            }
+        });
+
+        async function testAction() {
+            const castHash = document.getElementById('castHash').value;
+            const fid = document.getElementById('fid').value;
+            const resultDiv = document.getElementById('actionResult');
+            
+            try {
+                const response = await fetch('/api/actions/farlinker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        untrustedData: {
+                            fid: fid,
+                            castId: {
+                                fid: fid,
+                                hash: castHash
+                            },
+                            messageHash: '0x00',
+                            network: 1,
+                            timestamp: Date.now()
+                        }
+                    }),
+                });
+
+                const data = await response.json();
+                
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result';
+                resultDiv.innerHTML = `
+                    <strong>✓ Success!</strong><br>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    ${data.modalUrl ? `<br><button onclick="window.open('${data.modalUrl}', '_blank')">Open Modal URL</button>` : ''}
+                `;
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>✗ Error:</strong><br><pre>${error.message}</pre>`;
+            }
+        }
+
+        function loadModal() {
+            const castHash = document.getElementById('castHash').value;
+            const fid = document.getElementById('fid').value;
+            const frame = document.getElementById('modalFrame');
+            
+            frame.src = `/actions/modal?castId=${castHash}&fid=${fid}`;
+            frame.style.display = 'block';
+        }
+
+        function openModalNewTab() {
+            const castHash = document.getElementById('castHash').value;
+            const fid = document.getElementById('fid').value;
+            window.open(`/actions/modal?castId=${castHash}&fid=${fid}`, '_blank');
+        }
+    </script>
+</body>
+</html>

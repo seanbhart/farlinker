@@ -29,6 +29,8 @@ export function middleware(request: NextRequest) {
     pathname === '/apple-touch-icon-precomposed.png' ||
     pathname === '/.well-known/farcaster.json' ||
     pathname === '/test-action' ||
+    pathname === '/test-frame' ||
+    pathname === '/test-modal' ||
     pathname.startsWith('/actions/') ||
     pathname.endsWith('.png') ||
     pathname.endsWith('.jpg') ||

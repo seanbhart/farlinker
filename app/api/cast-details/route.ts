@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchCastByIdentifier } from '@/lib/neynar';
+import { fetchCastByHash } from '@/lib/neynar';
+
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +18,11 @@ export async function POST(request: NextRequest) {
     const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
     
     // Fetch cast data from Neynar
-    const cast = await fetchCastByIdentifier(formattedHash);
+    console.log('[Cast Details API] Fetching cast with hash:', formattedHash);
+    const cast = await fetchCastByHash(formattedHash);
     
     if (!cast) {
+      console.log('[Cast Details API] Cast not found, returning fallback');
       // Return minimal data if fetch fails
       return NextResponse.json({
         authorUsername: 'user',
@@ -27,6 +31,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Return the necessary data for generating the Farlinker URL
+    console.log('[Cast Details API] Returning username:', cast.author.username);
     return NextResponse.json({
       authorUsername: cast.author.username,
       hash: formattedHash,
@@ -35,7 +40,8 @@ export async function POST(request: NextRequest) {
         username: cast.author.username,
         display_name: cast.author.display_name,
         pfp_url: cast.author.pfp_url
-      }
+      },
+      embeds: cast.embeds || []
     });
   } catch (error) {
     console.error('[Cast Details API] Error:', error);

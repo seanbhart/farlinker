@@ -99,7 +99,7 @@ export async function fetchCastByIdentifier(identifier: string, viewerFid?: numb
       `${NEYNAR_API_BASE}/cast?${params}`,
       {
         headers: {
-          'api_key': apiKey,
+          'x-api-key': apiKey,
           'accept': 'application/json',
         },
       }
@@ -180,4 +180,67 @@ export function formatCastUrl(username: string, hash: string): string {
     hash = '0x' + hash;
   }
   return `https://farcaster.xyz/${username}/${hash}`;
+}
+
+// Simple in-memory cache for cast data
+const castCache = new Map<string, { data: NeynarCast; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// New function specifically for fetching cast by hash only
+export async function fetchCastByHash(hash: string): Promise<NeynarCast | null> {
+  const apiKey = process.env.NEYNAR_API_KEY;
+  
+  if (!apiKey) {
+    console.error('NEYNAR_API_KEY is not set');
+    return null;
+  }
+  
+  // Check cache first
+  const cached = castCache.get(hash);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    console.log('[Neynar] Returning cached cast for hash:', hash);
+    return cached.data;
+  }
+  
+  console.log('[Neynar] Fetching cast by hash:', hash);
+
+  try {
+    const params = new URLSearchParams({
+      identifier: hash,
+      type: 'hash'
+    });
+
+    const response = await fetch(
+      `${NEYNAR_API_BASE}/cast?${params}`,
+      {
+        headers: {
+          'x-api-key': apiKey,
+          'accept': 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Neynar] API error:', response.status, response.statusText, errorText);
+      return null;
+    }
+
+    const data: NeynarResponse = await response.json();
+    console.log('[Neynar] Successfully fetched cast by hash');
+    
+    // Cache the result
+    castCache.set(hash, { data: data.cast, timestamp: Date.now() });
+    
+    // Prevent memory leak
+    if (castCache.size > 100) {
+      const firstKey = castCache.keys().next().value;
+      if (firstKey) castCache.delete(firstKey);
+    }
+    
+    return data.cast;
+  } catch (error) {
+    console.error('[Neynar] Error fetching cast by hash:', error);
+    return null;
+  }
 }

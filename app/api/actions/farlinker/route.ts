@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || 'www.farlinker.xyz';
     const protocol = host.includes('localhost') ? 'http' : 'https';
     
-    // Return frame response that will show our modal
-    const frameUrl = `${protocol}://${host}/api/actions/frame?castId=${castId.hash}&fid=${castId.fid}`;
-    console.log('[Farlinker Action] Returning frame URL:', frameUrl);
+    // Return modal response instead of frame
+    const modalUrl = `${protocol}://${host}/actions/modal?castId=${castId.hash}&fid=${castId.fid}`;
+    console.log('[Farlinker Action] Returning modal URL:', modalUrl);
     
     return NextResponse.json({
-      type: 'frame',
-      frameUrl: frameUrl
+      type: 'modal',
+      modalUrl: modalUrl
     });
   } catch (error) {
     console.error('[Farlinker Action] Error:', error);

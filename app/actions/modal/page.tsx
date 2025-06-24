@@ -16,20 +16,25 @@ interface OptionType {
 interface CastData {
   castId: string;
   fid: string;
+  username?: string;
 }
 
 async function fetchCastDetails(castData: CastData) {
   try {
-    // Fetch cast data from Neynar
     const response = await fetch('/api/cast-details', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hash: castData.castId, fid: castData.fid })
+      body: JSON.stringify({ hash: castData.castId })
     });
     
     if (!response.ok) throw new Error('Failed to fetch cast details');
     
-    return await response.json();
+    const data = await response.json();
+    console.log('Cast details response:', data);
+    return {
+      authorUsername: data.authorUsername || 'user',
+      hash: data.hash || castData.castId
+    };
   } catch (error) {
     console.error('Error fetching cast details:', error);
     // Return fallback data
@@ -48,9 +53,8 @@ function OptionCard({ option, castData }: { option: OptionType; castData: CastDa
     setLoading(true);
     
     try {
-      const { authorUsername, hash } = await fetchCastDetails(castData);
       const isStandard = option.format === 'standard';
-      const farlinkerUrl = `https://farlinker.xyz/${authorUsername}/${hash}${isStandard ? '?preview=standard' : ''}`;
+      const previewType = isStandard ? 'standard' : 'enhanced';
       
       // Track option selection
       track('farlinker_action_option_selected', {
@@ -59,37 +63,25 @@ function OptionCard({ option, castData }: { option: OptionType; castData: CastDa
         format: option.format
       });
       
-      if (option.action === 'share') {
-        // Trigger native share via postMessage
-        window.parent.postMessage({
-          type: 'fc:action',
-          data: {
-            action: 'share',
-            url: farlinkerUrl
-          }
-        }, '*');
-      } else {
-        // Try to copy directly first (for testing)
-        try {
-          await navigator.clipboard.writeText(farlinkerUrl);
-          console.log('Copied to clipboard:', farlinkerUrl);
-        } catch {
-          console.log('Direct clipboard copy failed, using postMessage');
+      // Open the copy page in a new tab
+      // Don't pass username - let the copy page handle it
+      const copyPageUrl = `/actions/copy-v2?castId=${castData.castId}&type=${previewType}`;
+      
+      // Send message to parent to open link
+      window.parent.postMessage({
+        type: 'fc:action',
+        data: {
+          action: 'link',
+          url: copyPageUrl
         }
-        
-        // Also send via postMessage for Farcaster
-        window.parent.postMessage({
-          type: 'fc:action',
-          data: {
-            action: 'copy',
-            text: farlinkerUrl
-          }
-        }, '*');
-        
-        // Show copied feedback
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }
+      }, '*');
+      
+      // Also try to open directly for testing
+      window.open(copyPageUrl, '_blank');
+      
+      // Show feedback
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Error handling option click:', error);
     } finally {
@@ -114,7 +106,7 @@ function OptionCard({ option, castData }: { option: OptionType; castData: CastDa
       </div>
       <h3 className="option-title">{option.title}</h3>
       <p className="option-description">
-        {copied ? '✓ Copied!' : option.description}
+        {copied ? '✓ Opening...' : option.description}
       </p>
     </button>
   );
@@ -123,10 +115,10 @@ function OptionCard({ option, castData }: { option: OptionType; castData: CastDa
 export default function ActionModal({
   searchParams,
 }: {
-  searchParams: Promise<{ castId?: string; fid?: string }>;
+  searchParams: Promise<{ castId?: string; fid?: string; username?: string }>;
 }) {
   const [mounted, setMounted] = useState(false);
-  const [params, setParams] = useState<{ castId?: string; fid?: string }>({});
+  const [params, setParams] = useState<{ castId?: string; fid?: string; username?: string }>({});
   
   useEffect(() => {
     setMounted(true);
@@ -143,13 +135,14 @@ export default function ActionModal({
   
   const castData: CastData = {
     castId: params.castId,
-    fid: params.fid
+    fid: params.fid,
+    username: params.username
   };
   
   const options: OptionType[] = [
     {
       id: 'copy-enhanced',
-      title: 'copy farlinker link',
+      title: 'farlinker link',
       description: 'similar to twitter link preview',
       preview: '/apple_messages_farlinker.png',
       action: 'copy',
@@ -157,7 +150,7 @@ export default function ActionModal({
     },
     {
       id: 'copy-standard',
-      title: 'copy standard link',
+      title: 'standard link',
       description: 'similar to website link preview',
       preview: '/apple_messages_farlinker_standard.png',
       action: 'copy',

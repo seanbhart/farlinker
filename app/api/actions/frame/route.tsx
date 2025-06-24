@@ -3,9 +3,31 @@ import { fetchCastByIdentifier } from '@/lib/neynar';
 
 export const runtime = 'edge';
 
-export async function GET() {
-  // This is not used anymore - we'll use the static image
-  return new Response('Not needed', { status: 404 });
+export async function GET(request: NextRequest) {
+  // Return the initial frame for GET requests
+  const host = request.headers.get('host') || 'www.farlinker.xyz';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta property="fc:frame" content="vNext" />
+  <meta property="fc:frame:image" content="${baseUrl}/farlinker-options.png" />
+  <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
+  <meta property="fc:frame:button:1" content="Copy Farlinker Link" />
+  <meta property="fc:frame:button:2" content="Copy Standard Link" />
+  <meta property="og:title" content="Farlinker - Choose Link Format" />
+  <meta property="og:image" content="${baseUrl}/farlinker-options.png" />
+</head>
+<body></body>
+</html>`;
+  
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html',
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -47,30 +69,34 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Handle button clicks
+    // Handle button clicks - fetch cast details and redirect
     const formattedHash = castId.startsWith('0x') ? castId : `0x${castId}`;
     const cast = await fetchCastByIdentifier(formattedHash);
     
     const authorUsername = cast?.author?.username || 'user';
-    // Button 1 = standard farlinker, button 2 = with ?preview=standard
+    // Button 1 = enhanced farlinker, button 2 = standard
     const isStandard = buttonIndex === 2;
-    const farlinkerUrl = `${baseUrl}/${authorUsername}/${formattedHash}${isStandard ? '?preview=standard' : ''}`;
-    const linkType = isStandard ? 'Standard' : 'Farlinker';
+    const previewType = isStandard ? 'standard' : 'enhanced';
     
-    // Return frame with the URL displayed and a button to open it
+    // Generate the copy page URL
+    const copyPageUrl = `${baseUrl}/actions/copy?castId=${formattedHash}&type=${previewType}&username=${authorUsername}`;
+    
+    // Return frame that auto-opens the link
     const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta property="fc:frame" content="vNext" />
-  <meta property="fc:frame:image" content="${baseUrl}/api/actions/success?message=${encodeURIComponent(`${linkType} link ready!`)}&url=${encodeURIComponent(farlinkerUrl)}" />
+  <meta property="fc:frame:image" content="${baseUrl}/api/actions/copy-text?type=${previewType}" />
   <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-  <meta property="fc:frame:input:text" content="${farlinkerUrl}" />
   <meta property="fc:frame:button:1" content="Open Link" />
   <meta property="fc:frame:button:1:action" content="link" />
-  <meta property="fc:frame:button:1:target" content="${farlinkerUrl}" />
-  <meta property="og:title" content="${linkType} link ready!" />
+  <meta property="fc:frame:button:1:target" content="${copyPageUrl}" />
+  <meta property="og:title" content="${isStandard ? 'Standard' : 'Farlinker'} Link Ready" />
+  <meta http-equiv="refresh" content="0; url=${copyPageUrl}" />
 </head>
-<body></body>
+<body>
+  <script>window.location.href = "${copyPageUrl}";</script>
+</body>
 </html>`;
     
     return new Response(html, {
