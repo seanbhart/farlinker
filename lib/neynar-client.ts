@@ -8,7 +8,16 @@ const config = new Configuration({
 
 const client = new NeynarAPIClient(config);
 
-export async function fetchCastByUrl(username: string, shortHash: string) {
+export async function fetchCastByUrl(username: string, hash: string) {
+  // Handle both short and long hash formats
+  // Short format: 0x324ceda2 (8 chars after 0x)
+  // Long format: 0x324ceda2c96209aa6be69b58be65836a1ff68142 (40 chars after 0x)
+  let shortHash = hash;
+  if (hash.startsWith('0x') && hash.length > 10) {
+    // This is a long hash, shorten it to the first 8 chars after 0x
+    shortHash = '0x' + hash.slice(2, 10);
+  }
+  
   const cacheKey = `${username}:${shortHash}`;
   
   // Check cache first
