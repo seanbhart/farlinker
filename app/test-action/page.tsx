@@ -114,7 +114,7 @@ export default function TestAction() {
               
               {/* Iframe to test modal */}
               <div className="mt-6">
-                <h4 className="text-md font-semibold text-white mb-3">Modal Preview:</h4>
+                <h4 className="text-md font-semibold text-white mb-3">Frame Preview:</h4>
                 <iframe
                   src={modalUrl}
                   className="w-full h-96 rounded-lg border border-gray-700"
