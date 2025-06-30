@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { track } from '@vercel/analytics';
 
 export default function Home() {
@@ -51,12 +52,12 @@ export default function Home() {
               Our image generator creates high-quality PNG files perfect for professional use.
             </p>
             <div className="text-center">
-              <a 
+              <Link 
                 href="/image-generator"
                 className="inline-block px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-lg font-medium transition-colors"
               >
                 Launch Image Generator
-              </a>
+              </Link>
               <p className="text-purple-200 text-sm mt-3">
                 Perfect for presentations, landing pages, social media, and conference slides
               </p>

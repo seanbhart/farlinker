@@ -48,23 +48,31 @@ export async function POST(request: NextRequest) {
     const usernameValue = author.username;
     const text = cast.text || '';
     
-    // Handle embedded images
+    // Handle embedded images - use comprehensive detection like the working link preview system
     let embeddedImage = null;
     let aspectRatio = null;
     
     if (cast.embeds && cast.embeds.length > 0) {
       for (const embed of cast.embeds) {
-        if ('url' in embed && embed.url && (embed.url.includes('.jpg') || embed.url.includes('.png') || embed.url.includes('.gif') || embed.url.includes('.webp'))) {
-          embeddedImage = embed.url;
-          // Try to extract aspect ratio from metadata if available
-          if ('metadata' in embed && embed.metadata?.image) {
-            const width = embed.metadata.image.width_px;
-            const height = embed.metadata.image.height_px;
-            if (width && height && height > 0) {
-              aspectRatio = height / width; // height/width for the OG image generator
+        if ('url' in embed && embed.url) {
+          // Comprehensive image detection (matches the working link preview logic)
+          const isImage = embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
+                         embed.url.includes('imagedelivery.net') ||
+                         embed.url.includes('imgur.com') ||
+                         embed.url.includes('i.imgur.com');
+          
+          if (isImage) {
+            embeddedImage = embed.url;
+            // Try to extract aspect ratio from metadata if available
+            if ('metadata' in embed && embed.metadata?.image) {
+              const width = embed.metadata.image.width_px;
+              const height = embed.metadata.image.height_px;
+              if (width && height && height > 0) {
+                aspectRatio = height / width; // height/width for the OG image generator
+              }
             }
+            break;
           }
-          break;
         }
       }
     }

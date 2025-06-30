@@ -1,14 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 
 export default function ImageGenerator() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
-  const [castData, setCastData] = useState<any>(null);
+  const [castData, setCastData] = useState<{
+    hash: string;
+    pfp: string;
+    displayName: string;
+    username: string;
+    text?: string;
+    embeddedImage?: string;
+    aspectRatio?: number;
+  } | null>(null);
 
   // Extract cast hash from various input formats
   const extractCastInfo = (input: string) => {
@@ -107,7 +115,7 @@ export default function ImageGenerator() {
       
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err) {
+    } catch {
       setError('Failed to download image');
     }
   };
@@ -124,12 +132,12 @@ export default function ImageGenerator() {
             <p className="text-gray-400 mb-6">
               Generate downloadable enhanced link preview images for your presentations and marketing materials
             </p>
-            <a 
+            <Link 
               href="/"
               className="text-purple-400 hover:text-purple-300 underline"
             >
               ← Back to Farlinker
-            </a>
+            </Link>
           </div>
 
           {/* Input Section */}
