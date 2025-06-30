@@ -31,6 +31,7 @@ export function middleware(request: NextRequest) {
     pathname === '/test-action' ||
     pathname === '/test-frame' ||
     pathname === '/test-modal' ||
+    pathname === '/image-generator' ||
     pathname.startsWith('/actions/') ||
     pathname.endsWith('.png') ||
     pathname.endsWith('.jpg') ||

@@ -1,53 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchCastByHash } from '@/lib/neynar';
+import { fetchCastByUrl } from '@/lib/neynar-client';
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 
-export const runtime = 'edge';
+const config = new Configuration({
+  apiKey: process.env.NEYNAR_API_KEY || '',
+});
+
+const client = new NeynarAPIClient(config);
 
 export async function POST(request: NextRequest) {
   try {
-    const { hash } = await request.json();
-    
+    const body = await request.json();
+    const { hash, username } = body;
+
     if (!hash) {
-      return NextResponse.json(
-        { error: 'Missing hash parameter' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Cast hash is required' }, { status: 400 });
     }
-    
-    // Ensure hash has 0x prefix
-    const formattedHash = hash.startsWith('0x') ? hash : `0x${hash}`;
-    
-    // Fetch cast data from Neynar
-    console.log('[Cast Details API] Fetching cast with hash:', formattedHash);
-    const cast = await fetchCastByHash(formattedHash);
-    
+
+    let cast = null;
+
+    // If we have a username, use the existing fetchCastByUrl function
+    if (username) {
+      cast = await fetchCastByUrl(username, hash);
+    } else {
+      // For direct hash lookup, we need to use the Neynar API directly
+      try {
+        const response = await client.lookupCastByHashOrWarpcastUrl({
+          identifier: hash,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          type: "hash" as any
+        });
+        cast = response.cast;
+      } catch (error) {
+        console.error('[Cast Details] Direct hash lookup failed:', error);
+        return NextResponse.json({ error: 'Cast not found' }, { status: 404 });
+      }
+    }
+
     if (!cast) {
-      console.log('[Cast Details API] Cast not found, returning fallback');
-      // Return minimal data if fetch fails
-      return NextResponse.json({
-        authorUsername: 'user',
-        hash: formattedHash
-      });
+      return NextResponse.json({ error: 'Cast not found' }, { status: 404 });
     }
+
+    // Extract the data we need for image generation
+    const author = cast.author;
+    const pfp = author.pfp_url;
+    const displayName = author.display_name || author.username;
+    const usernameValue = author.username;
+    const text = cast.text || '';
     
-    // Return the necessary data for generating the Farlinker URL
-    console.log('[Cast Details API] Returning username:', cast.author.username);
-    return NextResponse.json({
-      authorUsername: cast.author.username,
-      hash: formattedHash,
-      text: cast.text,
+    // Handle embedded images
+    let embeddedImage = null;
+    let aspectRatio = null;
+    
+    if (cast.embeds && cast.embeds.length > 0) {
+      for (const embed of cast.embeds) {
+        if ('url' in embed && embed.url && (embed.url.includes('.jpg') || embed.url.includes('.png') || embed.url.includes('.gif') || embed.url.includes('.webp'))) {
+          embeddedImage = embed.url;
+          // Try to extract aspect ratio from metadata if available
+          if ('metadata' in embed && embed.metadata?.image) {
+            const width = embed.metadata.image.width_px;
+            const height = embed.metadata.image.height_px;
+            if (width && height && height > 0) {
+              aspectRatio = height / width; // height/width for the OG image generator
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    const result = {
+      hash: cast.hash,
+      pfp,
+      displayName,
+      username: usernameValue,
+      text,
+      embeddedImage,
+      aspectRatio,
       author: {
-        username: cast.author.username,
-        display_name: cast.author.display_name,
-        pfp_url: cast.author.pfp_url
-      },
-      embeds: cast.embeds || []
-    });
+        fid: author.fid,
+        username: usernameValue,
+        displayName,
+        pfp
+      }
+    };
+
+    return NextResponse.json(result);
+
   } catch (error) {
-    console.error('[Cast Details API] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch cast details' },
-      { status: 500 }
-    );
+    console.error('[Cast Details] Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

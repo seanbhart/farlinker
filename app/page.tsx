@@ -42,6 +42,27 @@ export default function Home() {
             Better link previews for Farcaster posts
           </p>
           
+          <div style={{ backgroundColor: '#6b46c1' }} className="rounded-lg p-8 mb-8 border border-purple-600">
+            <h2 className="text-xl font-medium text-white mb-6">
+              Generate Downloadable Images
+            </h2>
+            <p className="text-purple-100 mb-6">
+              Need beautiful Farcaster cast images for presentations, marketing materials, or social media? 
+              Our image generator creates high-quality PNG files perfect for professional use.
+            </p>
+            <div className="text-center">
+              <a 
+                href="/image-generator"
+                className="inline-block px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-lg font-medium transition-colors"
+              >
+                Launch Image Generator
+              </a>
+              <p className="text-purple-200 text-sm mt-3">
+                Perfect for presentations, landing pages, social media, and conference slides
+              </p>
+            </div>
+          </div>
+          
           <div style={{ backgroundColor: '#1c1a24' }} className="rounded-lg p-8 mb-8 border border-gray-800">
             <h2 className="text-xl font-medium text-white mb-6">
               How it works
