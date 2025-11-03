@@ -151,184 +151,131 @@ Or they can manually add it by going to Settings → Actions and entering:
 
 ---
 
-## Phase 2: Mini App Development (Future)
+## ✅ Phase 2: Mini App Development - COMPLETED
 
-### Mini App Concept
+### Mini App Overview
 
-The Farlinker Mini App will provide a richer experience:
-1. A full interface to generate Farlinker URLs for any Farcaster post
-2. Visual examples showing how each format appears
-3. Batch processing for multiple casts
-4. Analytics and link management
+The Farlinker Mini App has been successfully implemented and provides a streamlined experience for generating and sharing Farlinker URLs directly from Farcaster.
 
-### Mini App Development Steps
+**Key Features:**
+1. Share Extension - Receive casts shared from any Farcaster client
+2. One-Click Copy - Generate and copy Farlinker URLs with a single tap
+3. Format Selection - Choose between enhanced or standard preview formats
+4. Visual Previews - See how links will appear before sharing
+5. Cast Preview - View cast details within the mini app
+6. Analytics Tracking - Automatic usage tracking via Vercel Analytics
 
-#### Step 1: Setup and Basic Structure
+### Implementation Details
 
-1. **Initialize Mini App Project**
-   - Create `/mini-app` directory for the mini app code
-   - Set up basic Next.js structure for the mini app
-   - Install required dependencies:
-     ```bash
-     npm install @farcaster/frame-sdk
-     ```
+#### Components
+- **Mini App Page**: `/app/mini-app/page.tsx`
+  - Client-side React component using Farcaster Frame SDK
+  - Receives and processes shared cast data
+  - Provides UI for format selection and copying
 
-2. **Create Mini App Entry Point**
-   - Set up `/mini-app/page.tsx` as the main mini app interface
-   - Import and initialize the Farcaster Frame SDK
-   - Implement the `ready()` call to hide splash screen when loaded
-
-3. **Update Manifest**
-   - Add mini app configuration to `/public/.well-known/farcaster.json`
-   - Include required fields:
-     - `homeUrl`: Point to the mini app URL
-     - `name`: "Farlinker"
-     - `iconUrl`: Use existing Farlinker icon
-     - `splashImageUrl`: Use Farlinker logo
-     - `splashBackgroundColor`: Match brand colors
-     - `buttonTitle`: "Generate Link"
-
-#### Step 2: Core Functionality
-
-1. **Cast Selection Interface**
-   - Implement ability to receive shared casts via share extension
-   - Add `castShareUrl` to manifest for share extension support
-   - Parse cast data from URL parameters and SDK context
-
-2. **URL Generation**
-   - Create function to convert Farcaster URLs to Farlinker URLs
-   - Support both formats:
-     - Standard: `farlinker.xyz/username/hash`
-     - Enhanced: `farlinker.xyz/username/hash?preview=standard`
-
-3. **Preview Options UI**
-   - Design clean interface showing:
-     - Original cast content
-     - Two preview format options with visual examples
-     - Description of each format's benefits
-
-#### Step 3: Visual Examples Integration
-
-1. **Example Images**
-   - Display the three example images from the landing page:
-     - `/apple_messages_farcaster.png` - Original Farcaster preview
-     - `/apple_messages_farlinker.png` - Enhanced Farlinker preview
-     - `/apple_messages_farlinker_standard.png` - Standard format preview
-   - Show these as visual guides for what each option creates
-
-2. **Interactive Preview Selection**
-   - Allow users to tap on example images to select that format
-   - Highlight selected option
-   - Update generated URL based on selection
-
-#### Step 4: Sharing Implementation
-
-1. **Share Functionality**
-   - Implement share buttons using native share API
-   - Use `navigator.share()` for mobile devices
-   - Fallback to clipboard copy for desktop
-   - Show success feedback after sharing
-
-2. **Quick Actions**
-   - Add "Copy Link" button for manual copying
-   - Add "Share to Messages" button using SMS intent
-   - Consider platform-specific share options
-
-#### Step 5: Polish and Edge Cases
-
-1. **Error Handling**
-   - Handle cases where cast data is unavailable
-   - Provide fallback for manual URL entry
-   - Show helpful error messages
-
-2. **Loading States**
-   - Implement skeleton loaders while fetching cast data
-   - Smooth transitions between states
-   - Optimize for fast initial load
-
-3. **Responsive Design**
-   - Ensure UI works well in Farcaster's mini app container
-   - Test on various screen sizes
-   - Handle safe area insets properly
-
-## Technical Implementation Details
-
-### SDK Integration
-
-```typescript
-import { sdk } from '@farcaster/frame-sdk';
-
-// Initialize when component mounts
-useEffect(() => {
-  sdk.actions.ready();
-}, []);
-
-// Handle shared casts
-if (sdk.context.location?.type === 'cast_share') {
-  const cast = sdk.context.location.cast;
-  // Process cast data
-}
-```
-
-### Share Extension Setup
-
+#### Manifest Configuration
+Updated `/public/.well-known/farcaster.json`:
 ```json
 {
   "frame": {
-    "castShareUrl": "https://farlinker.xyz/mini-app/share",
-    // ... other config
+    "version": "1",
+    "name": "Farlinker",
+    "iconUrl": "https://farlinker.xyz/farlinker.png",
+    "splashImageUrl": "https://farlinker.xyz/farlinker.png",
+    "splashBackgroundColor": "#8B5CF6",
+    "homeUrl": "https://farlinker.xyz/mini-app",
+    "castShareUrl": "https://farlinker.xyz/mini-app"
   }
 }
 ```
 
-### URL Generation Logic
+#### Key Features Implemented
 
-```typescript
-function generateFarlinkerUrl(cast: MiniappCast, useStandard: boolean): string {
-  const baseUrl = 'https://farlinker.xyz';
-  const path = `${cast.author.username}/${cast.hash}`;
-  const params = useStandard ? '?preview=standard' : '';
-  return `${baseUrl}/${path}${params}`;
-}
+1. **SDK Integration**
+   - Initializes Farcaster Frame SDK on mount
+   - Calls `sdk.actions.ready()` to hide splash screen
+   - Accesses cast data via `sdk.context.location.cast`
+
+2. **Share Extension Support**
+   - `castShareUrl` enables the app to receive shared casts
+   - Appears in share menu when users tap share on any cast
+   - Automatically parses cast author, text, hash, and metadata
+
+3. **URL Generation**
+   - Generates enhanced format: `farlinker.xyz/username/hash`
+   - Generates standard format: `farlinker.xyz/username/hash?preview=standard`
+   - Uses cast author username and hash from SDK context
+
+4. **User Interface**
+   - Cast preview showing author details and text
+   - Radio button selection for format choice
+   - Visual preview images for each format
+   - Large "Copy Link" button with success feedback
+   - Empty state when no cast is shared
+
+5. **Analytics Events**
+   - `miniapp_opened_with_cast` - Tracks shares with cast data
+   - `miniapp_opened_direct` - Tracks direct opens
+   - `miniapp_link_copied` - Tracks successful copies with format
+
+### User Flow
+
+1. User taps share button on any Farcaster cast
+2. Selects "Farlinker" from the share menu
+3. Mini app opens with cast preview and format options
+4. User selects preferred format (enhanced or standard)
+5. User taps "Copy Link" button
+6. Link is copied to clipboard with success feedback
+7. User can paste and share the link anywhere
+
+### Design Decisions
+
+- **Brand Consistency**: Uses Farlinker brand colors (#17101f background, #8b5cf6 purple accents)
+- **Minimal UI**: Clean, focused interface with minimal distractions
+- **Visual Education**: Preview images show exactly how each format will appear
+- **Single-Click UX**: One tap to copy - no additional steps required
+- **Immediate Feedback**: Success state with checkmark and "Copied!" message
+
+### Deployment & Testing
+
+**Local Testing:**
+```bash
+npm install
+npm run dev
 ```
+Access at: `http://localhost:3000/mini-app`
 
-## User Flow
+**Production Deployment:**
+1. Deploy to Vercel or hosting provider
+2. Ensure `farcaster.json` manifest is accessible
+3. Mini app will automatically appear in Farcaster share menus
 
-1. User shares a cast to Farlinker Mini App
-2. Mini app opens showing:
-   - Cast preview
-   - Two format options with visual examples
-   - Share buttons
-3. User selects preferred format
-4. User taps share button
-5. Link is shared via messaging app or copied to clipboard
+**Testing Checklist:**
+- [x] SDK initializes and calls ready()
+- [x] Empty state displays when no cast is shared
+- [x] Cast data displays correctly when shared
+- [x] Format selection works
+- [x] URL generation is correct for both formats
+- [x] Clipboard copy works
+- [x] Analytics events fire correctly
+- [x] Loading states display properly
+- [x] Responsive design works on mobile
 
-## Design Considerations
+### Documentation
 
-- Match existing Farlinker brand colors (#17101f background, purple accents)
-- Use clean, minimal interface similar to landing page
-- Show visual examples prominently to educate users
-- Make sharing the primary action with large, accessible buttons
-- Provide immediate feedback for all actions
+See `MINIAPP_USAGE.md` for detailed usage instructions and user-facing documentation.
 
-## Testing Plan
+### Future Enhancements
 
-1. Test share extension integration
-2. Verify URL generation for various cast types
-3. Test sharing on different platforms (iOS, Android, Web)
-4. Ensure proper error handling
-5. Validate manifest configuration
-6. Test with various cast formats (with/without images, embeds, etc.)
+Potential future additions:
+1. Batch link generation for multiple casts
+2. Link history and management
+3. Custom preview templates
+4. Direct sharing to messaging apps
+5. QR code generation
+6. Performance analytics (track link clicks)
 
-## Future Enhancements
-
-1. Analytics to track which format users prefer
-2. Batch link generation for multiple casts
-3. History of generated links
-4. Custom preview templates
-5. Integration with Farcaster notifications for link performance
-
-## Resources
+### Resources
 
 - Farcaster Mini App SDK: https://github.com/farcasterxyz/frames
 - Mini App Documentation: https://miniapps.farcaster.xyz/
