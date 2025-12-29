@@ -13,9 +13,9 @@
     "@farcaster/frame-sdk": "^0.0.64",
     "@neynar/nodejs-sdk": "^2.46.0",
     "@vercel/analytics": "^1.5.0",
-    "next": "15.3.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "next": "^15.5.9",
+    "react": "^19.0.3",
+    "react-dom": "^19.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -24,7 +24,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "^15.5.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
