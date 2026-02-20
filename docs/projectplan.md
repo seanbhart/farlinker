@@ -53,40 +53,47 @@ The mini app runs inside Farcaster clients (Warpcast, etc.) and lets users gener
 ### TODO Items
 
 #### E1: Mini app page + SDK init
-- [ ] 22. Create `app/mini-app/page.tsx` — client component, entry point for the mini app
-- [ ] 23. Initialize SDK: `import { sdk } from '@farcaster/miniapp-sdk'`, call `sdk.actions.ready()` on mount
-- [ ] 24. Update `homeUrl` in `public/.well-known/farcaster.json` to `https://farlinker.xyz/mini-app`
-- [ ] 25. Add `/mini-app` to middleware allowlist
+- [x] 22. Create `app/mini-app/page.tsx` — client component, entry point for the mini app
+- [x] 23. Initialize SDK: `import sdk from '@farcaster/miniapp-sdk'`, await `sdk.context`, call `sdk.actions.ready()` on mount
+- [x] 24. Update `homeUrl` in `public/.well-known/farcaster.json` to `https://farlinker.xyz/mini-app`
+- [x] 25. Add `/mini-app` to middleware allowlist
 
 #### E2: Share extension + cast context
-- [ ] 26. Handle `sdk.context.location.type === 'cast_share'` to receive shared cast data (author, hash, text)
-- [ ] 27. Create `app/mini-app/share/page.tsx` as the share extension landing route
-- [ ] 28. Add `castShareUrl: "https://farlinker.xyz/mini-app/share"` to manifest `miniapp` section
-- [ ] 29. Fallback: if no cast context, show manual URL input or instructions
+- [x] 26. Handle `sdk.context.location.type === 'cast_share'` to receive shared cast data (author, hash, text)
+- [x] 27. `castShareUrl` points to `/mini-app` — same page handles both flows via SDK context
+- [x] 28. Add `castShareUrl: "https://farlinker.xyz/mini-app"` to manifest `miniapp` section
+- [x] 29. Fallback: if no cast context, show manual URL input with Farcaster/Warpcast URL parser
 
 #### E3: URL generation + UI
-- [ ] 30. Build URL generator: `farlinker.xyz/{username}/{hash}` (enhanced) and `?preview=standard` (standard)
-- [ ] 31. Cast preview component showing author PFP, display name, and cast text
-- [ ] 32. Two format option cards with visual example images (`/apple_messages_farlinker.png`, `/apple_messages_farlinker_standard.png`)
-- [ ] 33. Highlight selected format, show generated URL
+- [x] 30. Build URL generator: `farlinker.xyz/{username}/{hash}` (enhanced) and `?preview=standard` (standard)
+- [x] 31. Cast preview component showing author PFP, display name, and cast text
+- [x] 32. Two format option cards with visual example images (`/apple_messages_farlinker.png`, `/apple_messages_farlinker_standard.png`)
+- [x] 33. Highlight selected format, show generated URL
 
 #### E4: Copy + share actions
-- [ ] 34. "Copy Link" button using `navigator.clipboard.writeText()` with fallback
-- [ ] 35. "Share" button using `navigator.share()` on mobile, clipboard fallback on desktop
-- [ ] 36. Success feedback (copied/shared confirmation)
-- [ ] 37. Analytics tracking for format selection and share method
+- [x] 34. "Copy Link" button using `navigator.clipboard.writeText()` with fallback (textarea execCommand)
+- [x] 35. "Share" button using `navigator.share()` on mobile, clipboard fallback on desktop
+- [x] 36. Success feedback ("Copied!" for 2s)
+- [x] 37. Analytics tracking: `farlinker_miniapp_copy` and `farlinker_miniapp_share` events with format + username
 
 #### E5: Polish
-- [ ] 38. Loading skeleton while SDK initializes and cast data loads
-- [ ] 39. Respect `sdk.context.client.safeAreaInsets` for proper padding
-- [ ] 40. Match brand styling (#17101f background, purple accents)
-- [ ] 41. Test in Warpcast (share extension flow, direct launch flow)
+- [x] 38. Loading state while SDK initializes
+- [x] 39. Respect `sdk.context.client.safeAreaInsets` for proper padding
+- [x] 40. Match brand styling (#17101f background, purple accents)
+- [ ] 41. Test in Warpcast (share extension flow, direct launch flow) — use ngrok + [Mini App Preview Tool](https://farcaster.xyz/~/developers/mini-apps/preview)
+
+#### E6: Codex audit fixes
+- [x] 42. Use config-driven base URL (`NEXT_PUBLIC_BASE_URL` with `https://farlinker.xyz` fallback) in `generateUrl()`
+- [x] 43. Guard missing username from SDK context — `castFromContext()` returns null if `author.username` is absent, falls through to manual input
+- [x] 44. Update README.md with Mini App section (entry points, local testing with ngrok, manifest docs)
+- [x] 45. Document launcher/no-context behavior — SDK `catch` block falls through to manual mode intentionally
 
 ### Dependencies
 - E1 must complete before E2-E5
 - E2 (share extension) and E3 (UI) can be built in parallel
 - E4 depends on E3 (needs the UI to attach actions to)
 - E5 is final polish after core functionality works
+- E6 is audit follow-up, independent of E5
 
 ---
 

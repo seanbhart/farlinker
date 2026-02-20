@@ -10,7 +10,7 @@ Farlinker provides enhanced link previews for Farcaster posts when shared on Twi
 
 - 🖼️ Rich preview images with cast content
 - 🔗 Automatic redirect to original Farcaster post
-- 📱 Farcaster Frame support for in-app experiences
+- 📱 Farcaster Mini App with share extension support
 - ⚡ Fast, edge-optimized performance
 - 🎨 Beautiful, branded preview cards
 
@@ -123,6 +123,39 @@ After your first deployment:
 - No additional configuration needed for Edge functions
 - Automatic HTTPS and global CDN included
 
+## Mini App
+
+Farlinker includes a Farcaster Mini App at `/mini-app` that runs inside Warpcast and other Farcaster clients.
+
+### Entry Points
+
+- **Share extension**: User shares a cast to Farlinker via the Farcaster share sheet. The SDK provides cast context (`cast_share`) so no API call is needed.
+- **Direct launch**: User opens Farlinker from the mini app store. No cast context is available, so the app shows a manual URL input where users paste a Farcaster or Warpcast URL.
+
+Both flows converge on the same UI: cast preview, format selection (enhanced vs standard), and copy/share actions.
+
+### Local Testing
+
+The mini app requires HTTPS and the Farcaster SDK to function fully. For local development:
+
+1. Run `npm run dev` to start the local server
+2. Use [ngrok](https://ngrok.com) or a similar tunnel to expose localhost over HTTPS:
+   ```bash
+   ngrok http 3000
+   ```
+3. Open the [Mini App Preview Tool](https://farcaster.xyz/~/developers/mini-apps/preview) in Warpcast
+4. Enter your ngrok HTTPS URL (e.g., `https://abc123.ngrok.io/mini-app`)
+
+The manual URL input flow works without the SDK, so you can test it at `http://localhost:3000/mini-app` directly in a browser. The share extension flow requires the Farcaster client context.
+
+### Manifest
+
+The mini app is configured in `public/.well-known/farcaster.json` under the `miniapp` key:
+
+- `homeUrl`: Entry point for direct launch (`/mini-app`)
+- `castShareUrl`: Entry point for share extension (also `/mini-app` — the SDK context differentiates)
+- `accountAssociation`: Signed domain verification (production values required)
+
 ## Tech Stack
 
 - Next.js 15 with App Router
@@ -137,7 +170,7 @@ To validate the action and link previews after deployment:
 
 1. Verify the manifest is accessible at `https://farlinker.xyz/.well-known/farcaster.json`
 2. Test the action endpoint at `https://farlinker.xyz/api/actions/farlinker`
-3. Use the [Warpcast Frame Validator](https://warpcast.com/~/developers/frames) to validate frames
+3. Test the mini app at `https://farlinker.xyz/mini-app` or via the [Mini App Preview Tool](https://farcaster.xyz/~/developers/mini-apps/preview)
 4. Test link previews by sharing a Farlinker URL in Apple Messages, WhatsApp, Telegram, and Discord
 5. Confirm the modal loads at `https://farlinker.xyz/actions/copy-v2?castId=HASH&type=enhanced`
 

@@ -248,7 +248,7 @@ The share extension flow does **not** call any API — all cast data comes from 
     "splashImageUrl": "https://farlinker.xyz/farlinker.png",
     "splashBackgroundColor": "#8B5CF6",
     "homeUrl": "https://farlinker.xyz/mini-app",
-    "castShareUrl": "https://farlinker.xyz/mini-app/share"
+    "castShareUrl": "https://farlinker.xyz/mini-app"
   },
   "actions": [ ... ]
 }

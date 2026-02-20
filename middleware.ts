@@ -10,6 +10,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/actions/') ||
     pathname.startsWith('/.well-known/') ||
+    pathname.startsWith('/mini-app') ||
     pathname === '/' ||
     pathname === '/image-generator' ||
     pathname === '/favicon.ico' ||
