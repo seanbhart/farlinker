@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 
 const miniAppEmbed = {
   version: '1',
-  imageUrl: 'https://farlinker.xyz/farlinker-hero.png',
+  imageUrl: 'https://farlinker.xyz/farlinker-hero-v2.png',
   button: {
     title: 'Open Farlinker',
     action: {
       type: 'launch_miniapp',
       name: 'Farlinker',
       url: 'https://farlinker.xyz/mini-app',
-      splashImageUrl: 'https://farlinker.xyz/farlinker.png',
+      splashImageUrl: 'https://farlinker.xyz/farlinker-200-v2.png',
       splashBackgroundColor: '#8B5CF6',
     },
   },

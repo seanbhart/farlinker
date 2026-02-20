@@ -7,11 +7,11 @@
   "miniapp": {
     "version": "1",
     "name": "Farlinker",
-    "iconUrl": "https://farlinker.xyz/farlinker-1024.png",
-    "splashImageUrl": "https://farlinker.xyz/farlinker.png",
+    "iconUrl": "https://farlinker.xyz/farlinker-1024-v2.png",
+    "splashImageUrl": "https://farlinker.xyz/farlinker-200-v2.png",
     "splashBackgroundColor": "#8B5CF6",
     "homeUrl": "https://farlinker.xyz/mini-app",
-    "imageUrl": "https://farlinker.xyz/farlinker-hero.png",
+    "imageUrl": "https://farlinker.xyz/farlinker-hero-v2.png",
     "buttonTitle": "Open Farlinker",
     "castShareUrl": "https://farlinker.xyz/mini-app",
     "subtitle": "Better Farcaster link previews",
@@ -19,10 +19,10 @@
     "primaryCategory": "utility",
     "tags": ["farcaster", "link-preview", "sharing", "og-image", "social"],
     "tagline": "Rich Farcaster link previews",
-    "heroImageUrl": "https://farlinker.xyz/farlinker-hero.png",
+    "heroImageUrl": "https://farlinker.xyz/farlinker-hero-v2.png",
     "ogTitle": "Farlinker",
     "ogDescription": "Share Farcaster posts with rich link previews on any platform",
-    "ogImageUrl": "https://farlinker.xyz/farlinker-hero.png"
+    "ogImageUrl": "https://farlinker.xyz/farlinker-hero-v2.png"
   },
   "actions": [
     {
