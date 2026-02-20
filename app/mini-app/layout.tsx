@@ -10,7 +10,7 @@ const miniAppEmbed = {
       name: 'Farlinker',
       url: 'https://farlinker.xyz/mini-app',
       splashImageUrl: 'https://farlinker.xyz/farlinker-200-v2.png',
-      splashBackgroundColor: '#8B5CF6',
+      splashBackgroundColor: '#8A63D2',
     },
   },
 };
