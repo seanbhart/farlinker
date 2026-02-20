@@ -63,8 +63,8 @@ export default function MiniAppPage() {
   useEffect(() => {
     const init = async () => {
       try {
-        const context = await sdk.context;
         await sdk.actions.ready();
+        const context = await sdk.context;
 
         if (context?.client?.safeAreaInsets) {
           setSafeArea({
@@ -210,7 +210,7 @@ export default function MiniAppPage() {
               <button
                 onClick={fetchCastFromUrl}
                 disabled={fetching || !urlInput.trim()}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 cursor-pointer disabled:cursor-default"
               >
                 {fetching ? '...' : 'Go'}
               </button>
@@ -276,7 +276,7 @@ export default function MiniAppPage() {
             <div className="grid grid-cols-2 gap-3 mb-4">
               <button
                 onClick={() => setSelectedFormat('enhanced')}
-                className={`rounded-lg p-3 text-left transition-all ${
+                className={`rounded-lg p-3 text-left transition-all cursor-pointer ${
                   selectedFormat === 'enhanced'
                     ? 'bg-purple-900/50 border-2 border-purple-500'
                     : 'bg-gray-800 border-2 border-transparent'
@@ -293,7 +293,7 @@ export default function MiniAppPage() {
               </button>
               <button
                 onClick={() => setSelectedFormat('standard')}
-                className={`rounded-lg p-3 text-left transition-all ${
+                className={`rounded-lg p-3 text-left transition-all cursor-pointer ${
                   selectedFormat === 'standard'
                     ? 'bg-purple-900/50 border-2 border-purple-500'
                     : 'bg-gray-800 border-2 border-transparent'
@@ -321,7 +321,7 @@ export default function MiniAppPage() {
             <div className="flex gap-3">
               <button
                 onClick={copyToClipboard}
-                className={`flex-1 py-3 rounded-lg font-medium text-sm transition-all ${
+                className={`flex-1 py-3 rounded-lg font-medium text-sm transition-all cursor-pointer ${
                   copyFeedback
                     ? 'bg-green-600 text-white'
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
@@ -331,7 +331,7 @@ export default function MiniAppPage() {
               </button>
               <button
                 onClick={shareUrl}
-                className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium text-sm transition-all"
+                className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium text-sm transition-all cursor-pointer"
               >
                 Share
               </button>
@@ -344,7 +344,7 @@ export default function MiniAppPage() {
                   setCast(null);
                   setUrlInput('');
                 }}
-                className="w-full mt-3 py-2 text-gray-500 text-xs hover:text-gray-400"
+                className="w-full mt-3 py-2 text-gray-500 text-xs hover:text-gray-400 cursor-pointer"
               >
                 Use a different URL
               </button>
