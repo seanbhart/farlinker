@@ -16,7 +16,7 @@
     "description": "Share Farcaster posts with rich previews on iMessage, WhatsApp, Twitter, Discord, and more. Choose enhanced image or standard OG card format.",
     "primaryCategory": "utility",
     "tags": ["farcaster", "link-preview", "sharing", "og-image", "social"],
-    "tagline": "Rich previews for Farcaster posts",
+    "tagline": "Rich Farcaster link previews",
     "heroImageUrl": "https://farlinker.xyz/farlinker-hero.png",
     "ogTitle": "Farlinker",
     "ogDescription": "Share Farcaster posts with rich link previews on any platform",
