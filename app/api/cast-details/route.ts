@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchCastByUrl } from '@/lib/neynar-client';
-import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
-
-const config = new Configuration({
-  apiKey: process.env.NEYNAR_API_KEY || '',
-});
-
-const client = new NeynarAPIClient(config);
+import { fetchCastByUrl, fetchCastByHash } from '@/lib/neynar';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,25 +10,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Cast hash is required' }, { status: 400 });
     }
 
-    let cast = null;
-
-    // If we have a username, use the existing fetchCastByUrl function
-    if (username) {
-      cast = await fetchCastByUrl(username, hash);
-    } else {
-      // For direct hash lookup, we need to use the Neynar API directly
-      try {
-        const response = await client.lookupCastByHashOrWarpcastUrl({
-          identifier: hash,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          type: "hash" as any
-        });
-        cast = response.cast;
-      } catch (error) {
-        console.error('[Cast Details] Direct hash lookup failed:', error);
-        return NextResponse.json({ error: 'Cast not found' }, { status: 404 });
-      }
-    }
+    const cast = username
+      ? await fetchCastByUrl(username, hash)
+      : await fetchCastByHash(hash);
 
     if (!cast) {
       return NextResponse.json({ error: 'Cast not found' }, { status: 404 });
@@ -47,28 +24,26 @@ export async function POST(request: NextRequest) {
     const displayName = author.display_name || author.username;
     const usernameValue = author.username;
     const text = cast.text || '';
-    
-    // Handle embedded images - use comprehensive detection like the working link preview system
+
+    // Handle embedded images
     let embeddedImage = null;
     let aspectRatio = null;
-    
+
     if (cast.embeds && cast.embeds.length > 0) {
       for (const embed of cast.embeds) {
         if ('url' in embed && embed.url) {
-          // Comprehensive image detection (matches the working link preview logic)
-          const isImage = embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
+          const isImage = embed.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ||
                          embed.url.includes('imagedelivery.net') ||
                          embed.url.includes('imgur.com') ||
                          embed.url.includes('i.imgur.com');
-          
+
           if (isImage) {
             embeddedImage = embed.url;
-            // Try to extract aspect ratio from metadata if available
             if ('metadata' in embed && embed.metadata?.image) {
               const width = embed.metadata.image.width_px;
               const height = embed.metadata.image.height_px;
               if (width && height && height > 0) {
-                aspectRatio = height / width; // height/width for the OG image generator
+                aspectRatio = height / width;
               }
             }
             break;

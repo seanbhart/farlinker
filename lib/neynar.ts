@@ -1,246 +1,104 @@
-const NEYNAR_API_BASE = 'https://api.neynar.com/v2/farcaster';
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
+import { getCachedCast, setCachedCast } from "./cast-cache";
 
-interface NeynarCast {
-  hash: string;
-  thread_hash: string;
-  parent_hash: string | null;
-  parent_url: string | null;
-  root_parent_url: string | null;
-  parent_author: {
-    fid: number;
-  } | null;
-  author: {
-    object: string;
-    fid: number;
-    custody_address: string;
-    username: string;
-    display_name: string;
-    pfp_url: string;
-    profile: {
-      bio: {
-        text: string;
-      };
-    };
-    follower_count: number;
-    following_count: number;
-    verifications: string[];
-    verified_addresses: {
-      eth_addresses: string[];
-      sol_addresses: string[];
-    };
-    active_status: string;
-    power_badge: boolean;
-  };
-  text: string;
-  timestamp: string;
-  embeds: Array<{
-    url?: string;
-    metadata?: {
-      content_type?: string;
-      content_length?: number;
-      _status?: string;
-      image?: {
-        width_px?: number;
-        height_px?: number;
-      };
-      video?: {
-        duration_s?: number;
-        stream?: Array<{
-          codec_name?: string;
-          height_px?: number;
-          width_px?: number;
-        }>;
-      };
-      html?: {
-        favicon?: string;
-        ogImage?: string;
-        ogTitle?: string;
-        ogDescription?: string;
-      };
-    };
-    cast_id?: {
-      fid: number;
-      hash: string;
-    };
-  }>;
-  reactions: {
-    likes_count: number;
-    recasts_count: number;
-  };
-  replies: {
-    count: number;
-  };
-  mentioned_profiles: unknown[];
-}
+const config = new Configuration({
+  apiKey: process.env.NEYNAR_API_KEY || '',
+});
 
-interface NeynarResponse {
-  cast: NeynarCast;
-}
+const client = new NeynarAPIClient(config);
 
-export async function fetchCastByIdentifier(identifier: string, viewerFid?: number): Promise<NeynarCast | null> {
-  const apiKey = process.env.NEYNAR_API_KEY;
-  
-  if (!apiKey) {
-    console.error('NEYNAR_API_KEY is not set');
-    return null;
+/**
+ * Fetch a cast by Warpcast URL (username + hash).
+ * Handles both short (0x324ceda2) and long (0x324ceda2c96209aa6be69b58be65836a1ff68142) hash formats.
+ */
+export async function fetchCastByUrl(username: string, hash: string) {
+  // Normalize to short hash for Warpcast URL format
+  let shortHash = hash;
+  if (hash.startsWith('0x') && hash.length > 10) {
+    shortHash = '0x' + hash.slice(2, 10);
   }
-  
-  console.log('Fetching cast with identifier:', identifier);
+
+  const cacheKey = `url:${username}:${shortHash}`;
+
+  const cached = getCachedCast(cacheKey);
+  if (cached) {
+    return cached;
+  }
 
   try {
-    // Try with the identifier as-is first (could be a short hash)
-    const params = new URLSearchParams({
-      identifier: identifier,
-      type: 'hash',
-      ...(viewerFid && { viewer_fid: viewerFid.toString() }),
-    });
-
-    const response = await fetch(
-      `${NEYNAR_API_BASE}/cast?${params}`,
-      {
-        headers: {
-          'x-api-key': apiKey,
-          'accept': 'application/json',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Neynar API error:', response.status, response.statusText, errorText);
-      
-      // If it fails with a short hash, we might need to try a different approach
-      // Could try searching by URL or other methods
+    if (!process.env.NEYNAR_API_KEY) {
+      console.error('[Neynar] No API key set');
       return null;
     }
 
-    const data: NeynarResponse = await response.json();
-    return data.cast;
-  } catch (error) {
-    console.error('Error fetching cast from Neynar:', error);
-    return null;
-  }
-}
+    const url = `https://warpcast.com/${username}/${shortHash}`;
 
-// Function to fetch by Farcaster URL
-export async function fetchCastByUrl(username: string, shortHash: string): Promise<NeynarCast | null> {
-  const apiKey = process.env.NEYNAR_API_KEY;
-  
-  if (!apiKey) {
-    console.error('NEYNAR_API_KEY is not set');
-    return null;
-  }
-  
-  // According to Neynar docs, we can use just the path part
-  // Try different URL formats
-  const urls = [
-    `https://warpcast.com/${username}/${shortHash}`,
-    `warpcast.com/${username}/${shortHash}`,
-    `${username}/${shortHash}`
-  ];
-  
-  for (const castUrl of urls) {
-    console.log('Trying to fetch cast by URL:', castUrl);
+    const response = await client.lookupCastByHashOrWarpcastUrl({
+      identifier: url,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: "url" as any
+    });
 
-    try {
-      const params = new URLSearchParams({
-        identifier: castUrl,
-        type: 'url',
-      });
-
-      const response = await fetch(
-        `${NEYNAR_API_BASE}/cast?${params}`,
-        {
-          headers: {
-            'api_key': apiKey,
-            'accept': 'application/json',
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data: NeynarResponse = await response.json();
-        console.log('Successfully fetched cast by URL');
-        return data.cast;
-      } else {
-        const errorText = await response.text();
-        console.error(`Neynar API error for ${castUrl}:`, response.status, errorText);
-      }
-    } catch (error) {
-      console.error(`Error fetching cast from Neynar by URL ${castUrl}:`, error);
+    if (response.cast) {
+      setCachedCast(cacheKey, response.cast);
     }
-  }
-  
-  return null;
-}
 
-export function formatCastUrl(username: string, hash: string): string {
-  // Ensure hash starts with 0x
-  if (!hash.startsWith('0x')) {
-    hash = '0x' + hash;
-  }
-  return `https://farcaster.xyz/${username}/${hash}`;
-}
-
-// Simple in-memory cache for cast data
-const castCache = new Map<string, { data: NeynarCast; timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-// New function specifically for fetching cast by hash only
-export async function fetchCastByHash(hash: string): Promise<NeynarCast | null> {
-  const apiKey = process.env.NEYNAR_API_KEY;
-  
-  if (!apiKey) {
-    console.error('NEYNAR_API_KEY is not set');
+    return response.cast;
+  } catch (error) {
+    const err = error as { response?: { status?: number }, message?: string };
+    if (err?.response?.status === 429) {
+      console.error('[Neynar] Rate limit hit');
+    } else if (err?.response?.status === 404) {
+      console.error('[Neynar] Cast not found:', shortHash);
+    } else if (err?.response?.status === 401) {
+      console.error('[Neynar] Invalid API key');
+    } else {
+      console.error('[Neynar] Error:', err?.message || 'Unknown error');
+    }
     return null;
   }
-  
-  // Check cache first
-  const cached = castCache.get(hash);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    console.log('[Neynar] Returning cached cast for hash:', hash);
-    return cached.data;
+}
+
+/**
+ * Fetch a cast by hash directly.
+ * Accepts both short and full-length hashes.
+ */
+export async function fetchCastByHash(hash: string) {
+  const cacheKey = `hash:${hash}`;
+
+  const cached = getCachedCast(cacheKey);
+  if (cached) {
+    return cached;
   }
-  
-  console.log('[Neynar] Fetching cast by hash:', hash);
 
   try {
-    const params = new URLSearchParams({
+    if (!process.env.NEYNAR_API_KEY) {
+      console.error('[Neynar] No API key set');
+      return null;
+    }
+
+    const response = await client.lookupCastByHashOrWarpcastUrl({
       identifier: hash,
-      type: 'hash'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: "hash" as any
     });
 
-    const response = await fetch(
-      `${NEYNAR_API_BASE}/cast?${params}`,
-      {
-        headers: {
-          'x-api-key': apiKey,
-          'accept': 'application/json',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[Neynar] API error:', response.status, response.statusText, errorText);
-      return null;
+    if (response.cast) {
+      setCachedCast(cacheKey, response.cast);
     }
 
-    const data: NeynarResponse = await response.json();
-    console.log('[Neynar] Successfully fetched cast by hash');
-    
-    // Cache the result
-    castCache.set(hash, { data: data.cast, timestamp: Date.now() });
-    
-    // Prevent memory leak
-    if (castCache.size > 100) {
-      const firstKey = castCache.keys().next().value;
-      if (firstKey) castCache.delete(firstKey);
-    }
-    
-    return data.cast;
+    return response.cast;
   } catch (error) {
-    console.error('[Neynar] Error fetching cast by hash:', error);
+    const err = error as { response?: { status?: number }, message?: string };
+    if (err?.response?.status === 429) {
+      console.error('[Neynar] Rate limit hit');
+    } else if (err?.response?.status === 404) {
+      console.error('[Neynar] Cast not found:', hash);
+    } else if (err?.response?.status === 401) {
+      console.error('[Neynar] Invalid API key');
+    } else {
+      console.error('[Neynar] Error:', err?.message || 'Unknown error');
+    }
     return null;
   }
 }

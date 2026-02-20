@@ -1,17 +1,16 @@
 {
   "accountAssociation": {
-    "header": "TODO: Generate this with Farcaster account",
-    "payload": "TODO: Generate this with Farcaster account",
-    "signature": "TODO: Generate this with Farcaster account"
+    "header": "eyJmaWQiOjQ2MTIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhmQmFkOGM0NUM2Njk3MDYwNzFBNEYwNTAyZDMyMzcxQzMwNjM5NzFiIn0",
+    "payload": "eyJkb21haW4iOiJmYXJsaW5rZXIueHl6In0",
+    "signature": "oYV3Wqkx1IqgFKigLL1SERDCCF8LRUyO5q1ocEy9Hg4vV3FN3hkTDROJ6zU8b8pZRuYT8kC+wsbAvpVmnsqE3hs="
   },
-  "frame": {
+  "miniapp": {
     "version": "1",
     "name": "Farlinker",
     "iconUrl": "https://farlinker.xyz/farlinker.png",
     "splashImageUrl": "https://farlinker.xyz/farlinker.png",
     "splashBackgroundColor": "#8B5CF6",
-    "homeUrl": "https://farlinker.xyz",
-    "webhookUrl": "https://farlinker.xyz/api/webhook"
+    "homeUrl": "https://farlinker.xyz"
   },
   "actions": [
     {

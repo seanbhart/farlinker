@@ -128,8 +128,18 @@ After your first deployment:
 - Next.js 15 with App Router
 - TypeScript
 - Tailwind CSS
-- @farcaster/frame-sdk for Frame support
+- @farcaster/miniapp-sdk for Mini App support
 - Neynar API for cast data
+
+## Validation
+
+To validate the action and link previews after deployment:
+
+1. Verify the manifest is accessible at `https://farlinker.xyz/.well-known/farcaster.json`
+2. Test the action endpoint at `https://farlinker.xyz/api/actions/farlinker`
+3. Use the [Warpcast Frame Validator](https://warpcast.com/~/developers/frames) to validate frames
+4. Test link previews by sharing a Farlinker URL in Apple Messages, WhatsApp, Telegram, and Discord
+5. Confirm the modal loads at `https://farlinker.xyz/actions/copy-v2?castId=HASH&type=enhanced`
 
 ## Troubleshooting
 
