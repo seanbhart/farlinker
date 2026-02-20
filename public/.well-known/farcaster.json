@@ -7,11 +7,20 @@
   "miniapp": {
     "version": "1",
     "name": "Farlinker",
-    "iconUrl": "https://farlinker.xyz/farlinker.png",
+    "iconUrl": "https://farlinker.xyz/farlinker-1024.png",
     "splashImageUrl": "https://farlinker.xyz/farlinker.png",
     "splashBackgroundColor": "#8B5CF6",
     "homeUrl": "https://farlinker.xyz/mini-app",
-    "castShareUrl": "https://farlinker.xyz/mini-app"
+    "castShareUrl": "https://farlinker.xyz/mini-app",
+    "subtitle": "Better Farcaster link previews",
+    "description": "Share Farcaster posts with rich previews on iMessage, WhatsApp, Twitter, Discord, and more. Choose enhanced image or standard OG card format.",
+    "primaryCategory": "utility",
+    "tags": ["farcaster", "link-preview", "sharing", "og-image", "social"],
+    "tagline": "Rich previews for Farcaster posts",
+    "heroImageUrl": "https://farlinker.xyz/farlinker-hero.png",
+    "ogTitle": "Farlinker",
+    "ogDescription": "Share Farcaster posts with rich link previews on any platform",
+    "ogImageUrl": "https://farlinker.xyz/farlinker-hero.png"
   },
   "actions": [
     {
