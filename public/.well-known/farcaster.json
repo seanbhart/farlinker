@@ -11,6 +11,8 @@
     "splashImageUrl": "https://farlinker.xyz/farlinker.png",
     "splashBackgroundColor": "#8B5CF6",
     "homeUrl": "https://farlinker.xyz/mini-app",
+    "imageUrl": "https://farlinker.xyz/farlinker-hero.png",
+    "buttonTitle": "Open Farlinker",
     "castShareUrl": "https://farlinker.xyz/mini-app",
     "subtitle": "Better Farcaster link previews",
     "description": "Share Farcaster posts with rich previews on iMessage, WhatsApp, Twitter, Discord, and more. Choose enhanced image or standard OG card format.",
